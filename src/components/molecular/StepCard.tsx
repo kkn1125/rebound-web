@@ -1,13 +1,14 @@
+import { NotoTypography } from "@components/atom/NotoTypography";
 import { SerifTypography } from "@components/atom/SerifTypography";
-import { Paper, Stack, Typography } from "@mui/material";
+import { Paper, Stack } from "@mui/material";
 import { ReactNode } from "react";
 
-interface LandingCardProps {
+interface StepCardProps {
   index: number;
   title: string;
   content: ReactNode;
 }
-const LandingCard: React.FC<LandingCardProps> = ({ index, title, content }) => {
+const StepCard: React.FC<StepCardProps> = ({ index, title, content }) => {
   return (
     <Stack
       component={Paper}
@@ -18,19 +19,23 @@ const LandingCard: React.FC<LandingCardProps> = ({ index, title, content }) => {
         background: (theme) => theme.palette.background.default,
         borderColor: "#E3E3E3",
         borderRadius: 3,
+        transition: "border-color 300ms ease",
+        ["&:hover"]: {
+          borderColor: "#121212",
+        },
       }}
     >
       <SerifTypography fontSize={36} fontWeight={200}>
         {("" + index).padStart(2, "0")}
       </SerifTypography>
-      <Typography fontSize={24} fontWeight={700}>
+      <SerifTypography fontSize={24} fontWeight={700}>
         {title}
-      </Typography>
-      <Typography color="textSecondary" fontWeight={100}>
+      </SerifTypography>
+      <NotoTypography color="textSecondary" fontWeight={100}>
         {content}
-      </Typography>
+      </NotoTypography>
     </Stack>
   );
 };
 
-export default LandingCard;
+export default StepCard;

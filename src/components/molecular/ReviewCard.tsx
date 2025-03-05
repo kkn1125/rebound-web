@@ -21,7 +21,12 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ name, role, content }) => {
       <SerifTypography mode="dark" fontSize={36}>
         "
       </SerifTypography>
-      <NotoTypography mode="dark" fontStyle="italic" fontWeight={200}>
+      <NotoTypography
+        mode="dark"
+        italic
+        fontWeight={200}
+        color="textPrimary"
+      >
         {content}
       </NotoTypography>
       <ReviewAuthor name={name} role={role} />

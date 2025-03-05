@@ -1,4 +1,4 @@
-import { Avatar, Stack, Typography } from "@mui/material";
+import { Avatar, Stack } from "@mui/material";
 import { NotoTypography } from "./NotoTypography";
 
 interface ReviewAuthorProps {
@@ -13,7 +13,9 @@ const ReviewAuthor: React.FC<ReviewAuthorProps> = ({ name, role }) => {
         <NotoTypography mode="dark" fontWeight={700}>
           {name}
         </NotoTypography>
-        <NotoTypography mode="dark">{role}</NotoTypography>
+        <NotoTypography mode="dark" color="textCaption">
+          {role}
+        </NotoTypography>
       </Stack>
     </Stack>
   );

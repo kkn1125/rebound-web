@@ -38,8 +38,8 @@ const GlobalThemeProvider: React.FC<GlobalThemeProviderProps> = ({
     const storedTheme = getStoredTheme();
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const isDarkMode = mediaQuery.matches;
-    console.log(`✅ check storedTheme: ${storedTheme}`);
-    console.log(`✅ check is dark?: ${isDarkMode}`);
+    // console.log(`✅ check storedTheme: ${storedTheme}`);
+    // console.log(`✅ check is dark?: ${isDarkMode}`);
 
     if (!storedTheme) {
       storeTheme(isDarkMode);
@@ -90,10 +90,11 @@ const GlobalThemeProvider: React.FC<GlobalThemeProviderProps> = ({
         // fontFamily: "'Playfair Display', 'Noto Sans KR', sans-serif, serif",
         allVariants: {
           color: newTheme.text?.primary,
-          colorAdjust: "exact",
+          // colorAdjust: "exact",
+          wordBreak: "keep-all",
         },
         caption: {
-          color: newTheme.text?.disabled,
+          // color: newTheme.text?.disabled,
         },
       },
     };

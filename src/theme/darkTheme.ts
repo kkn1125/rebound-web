@@ -36,6 +36,7 @@ const darkTheme = {
     secondary: "#B0BEC5", // 라이트 블루 그레이
     disabled: "#9E9E9E",
     white: "#121212",
+    caption: "#9E9E9E",
   },
   GrayText: "#9E9E9E", // 미디엄 그레이
   divider: "#37474F", // 다크 블루 그레이

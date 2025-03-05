@@ -1,26 +1,27 @@
 import { Stack, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+
+const menuList = [
+  { name: "리바운드 소개", to: "#intro" },
+  { name: "실패 공유", to: "#failgram" },
+  { name: "성장 과정", to: "#growth" },
+  { name: "커뮤니티", to: "#community" },
+];
 
 interface MenuListProps {}
 const MenuList: React.FC<MenuListProps> = () => {
   return (
-    <Stack direction="row" gap={2} alignItems="center">
-      <Typography
-        color="textPrimary"
-        component={Link}
-        to="/"
-        sx={{ textDecoration: "none" }}
-      >
-        경험공유
-      </Typography>
-      <Typography
-        color="textPrimary"
-        component={Link}
-        to="/"
-        sx={{ textDecoration: "none" }}
-      >
-        통계
-      </Typography>
+    <Stack direction="row" gap={3} alignItems="center">
+      {menuList.map((menu) => (
+        <Typography
+          key={menu.name}
+          color="textPrimary"
+          component="a"
+          href={menu.to}
+          sx={{ textDecoration: "none" }}
+        >
+          {menu.name}
+        </Typography>
+      ))}
     </Stack>
   );
 };

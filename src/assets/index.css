@@ -6,7 +6,6 @@
   font-weight: 400;
 
   color: inherit;
-
   /* color: #121212;
   background-color: #ffffff; */
 
@@ -19,72 +18,73 @@
 html,
 body {
   margin: 0;
+  scroll-behavior: smooth;
 }
 
 .noto-sans-kr-thin {
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "Noto Sans KR", sans-serif !important;
   font-optical-sizing: auto;
-  font-weight: thin;
+  font-weight: thin !important;
   font-style: normal;
 }
 .noto-sans-kr-normal {
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "Noto Sans KR", sans-serif !important;
   font-optical-sizing: auto;
-  font-weight: normal;
+  font-weight: normal !important;
   font-style: normal;
 }
 .noto-sans-kr-bold {
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "Noto Sans KR", sans-serif !important;
   font-optical-sizing: auto;
-  font-weight: bold;
+  font-weight: bold !important;
   font-style: normal;
 }
 .noto-sans-kr-border {
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "Noto Sans KR", sans-serif !important;
   font-optical-sizing: auto;
-  font-weight: border;
+  font-weight: border !important;
   font-style: normal;
 }
 
 .playfair-display-thin {
-  font-family: "Playfair Display", serif;
+  font-family: "Playfair Display", "Nanum Myeongjo", serif !important;
   font-optical-sizing: auto;
-  font-weight: thin;
+  font-weight: thin !important;
   font-style: normal;
 }
 .playfair-display-normal {
-  font-family: "Playfair Display", serif;
+  font-family: "Playfair Display", "Nanum Myeongjo", serif !important;
   font-optical-sizing: auto;
-  font-weight: normal;
+  font-weight: normal !important;
   font-style: normal;
 }
 .playfair-display-bold {
-  font-family: "Playfair Display", serif;
+  font-family: "Playfair Display", "Nanum Myeongjo", serif !important;
   font-optical-sizing: auto;
-  font-weight: bold;
+  font-weight: bold !important;
   font-style: normal;
 }
 .playfair-display-bolder {
-  font-family: "Playfair Display", serif;
+  font-family: "Playfair Display", "Nanum Myeongjo", serif !important;
   font-optical-sizing: auto;
-  font-weight: bolder;
+  font-weight: bolder !important;
   font-style: normal;
 }
 
 .nanum-myeongjo-regular {
-  font-family: "Nanum Myeongjo", serif;
-  font-weight: 400;
+  font-family: "Nanum Myeongjo", serif !important;
+  font-weight: 400 !important;
   font-style: normal;
 }
 
 .nanum-myeongjo-bold {
-  font-family: "Nanum Myeongjo", serif;
-  font-weight: 700;
+  font-family: "Nanum Myeongjo", serif !important;
+  font-weight: 700 !important;
   font-style: normal;
 }
 
 .nanum-myeongjo-extrabold {
-  font-family: "Nanum Myeongjo", serif;
-  font-weight: 800;
+  font-family: "Nanum Myeongjo", serif !important;
+  font-weight: 800 !important;
   font-style: normal;
 }

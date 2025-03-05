@@ -20,6 +20,7 @@ declare module "@mui/material/styles/createPalette" {
   }
   interface TypeText {
     white: string;
+    caption: string;
   }
 }
 

@@ -37,8 +37,9 @@ const lightTheme = {
   text: {
     primary: "#000000",
     secondary: "#565656",
-    disabled: "#9E9E9E",
+    disabled: "#7E7E7E",
     white: "#FFFFFF",
+    caption: "#ACACAC",
   },
   GrayText: "#B1B1B1",
   divider: grey[700],

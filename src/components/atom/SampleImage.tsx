@@ -1,21 +1,31 @@
-import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, SxProps, Typography, useTheme } from "@mui/material";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FiCamera } from "react-icons/fi";
 
 interface SampleImageProps {
-  width: number;
-  height: number;
+  width?: number | string;
+  height?: number | string;
+  sx?: SxProps;
 }
-const SampleImage: React.FC<SampleImageProps> = ({ width, height }) => {
+const SampleImage: React.FC<SampleImageProps> = ({ width, height, sx }) => {
   const [updated, setUpdated] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
 
-  const boxWidth = useMemo(() => {
-    const currentHeight =
-      updated && boxRef.current ? boxRef.current.clientHeight : height;
-    const currentWidth =
-      updated && boxRef.current ? boxRef.current.clientWidth : width;
+  const currentHeight = useMemo(
+    () => boxRef.current?.clientHeight ?? 0,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [updated]
+  );
+  const currentWidth = useMemo(
+    () => boxRef.current?.clientWidth ?? 0,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [updated]
+  );
+
+  const boxAngle = useMemo(() => {
     return (Math.atan2(currentWidth, currentHeight) * 180) / Math.PI;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updated]);
 
   useEffect(() => {
@@ -34,51 +44,107 @@ const SampleImage: React.FC<SampleImageProps> = ({ width, height }) => {
         setUpdated((updated) => !updated);
         Object.assign(boxRef, { current: instance });
       }}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      minWidth={{ xs: "auto", md: width }}
+      minHeight={{ xs: "auto", md: height }}
+      textTransform="uppercase"
+      color="#C3C3C3"
+      overflow="hidden"
+      position="relative"
+      borderRadius={3}
+      boxShadow="0px 0px 50px -10px #A3A3A376"
+      flex={1}
       sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        minWidth: { xs: "auto", lg: width },
-        minHeight: height,
+        userSelect: "none",
         aspectRatio: {
           xs: 1 / 1,
-          md: "auto",
+          md: 16 / 7,
         },
-        textTransform: "uppercase",
-        color: "#c3c3c3",
-        overflow: "hidden",
         background: theme.palette.background.paper,
-        position: "relative",
         textShadow: () => {
           const paper = theme.palette.background.paper;
           return `2px 2px 0px ${paper}, -2px -2px 0px ${paper},2px -2px 0px ${paper}, -2px 2px 0px ${paper}, 2px 0px 0px ${paper}, 0px 2px 0px ${paper}, 0px -2px 0px ${paper}, -2px 0px 0px ${paper}`;
         },
-        ["&:before"]: {
-          content: '""',
-          transform: `translate(-50%, -50%) rotate(${boxWidth}deg)`,
-          height: "200%",
-          width: "1px",
-          borderLeft: "1px solid #56565626",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          zIndex: 0,
-        },
-        ["&:after"]: {
-          content: '""',
-          transform: `translate(-50%, -50%) rotate(${180 - boxWidth}deg)`,
-          height: "200%",
-          width: "1px",
-          borderLeft: "1px solid #56565626",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          zIndex: 0,
-        },
+        ...sx,
       }}
     >
-      <Typography fontSize={36} sx={{ zIndex: 1 }}>
-        sample
+      <Box
+        position="absolute"
+        top="50%"
+        left="50%"
+        height="200%"
+        zIndex={0}
+        borderLeft="1px solid #56565626"
+        sx={{
+          transform: `translate(-50%, -50%) rotate(${180 - boxAngle}deg)`,
+        }}
+      />
+      <Box
+        position="absolute"
+        top="50%"
+        left="50%"
+        height="200%"
+        zIndex={0}
+        borderLeft="1px solid #56565626"
+        sx={{
+          transform: `translate(-50%, -50%) rotate(${boxAngle}deg)`,
+        }}
+      />
+      <Box
+        position="absolute"
+        top="50%"
+        left="50%"
+        height="200%"
+        zIndex={0}
+        borderLeft="1px solid #56565626"
+        sx={{
+          transform: `translate(-50%, -50%)`,
+        }}
+      />
+      <Box
+        position="absolute"
+        top="50%"
+        left="50%"
+        height="200%"
+        zIndex={0}
+        borderLeft="1px solid #56565626"
+        sx={{
+          transform: `translate(-50%, -50%) rotate(90deg)`,
+        }}
+      />
+      <Box
+        position="absolute"
+        sx={{
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          boxShadow: `inset 0 0 100px ${
+            Math.min(currentHeight, currentWidth) / 5
+          }px ${theme.palette.background.paper}`,
+          zIndex: 1,
+        }}
+      />
+      <Typography
+        position="absolute"
+        fontSize={36}
+        zIndex={1}
+        color="textDisabled"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        borderRadius={100}
+        width={80}
+        height={80}
+        border="5px solid #ffffff"
+        sx={{
+          backgroundColor: "#E2E2E2",
+          boxShadow: "inset 0 0 10px 0 #959595, 0 0 10px 0 #A3A3A3",
+        }}
+      >
+        <FiCamera />
       </Typography>
     </Box>
   );
