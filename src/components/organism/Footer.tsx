@@ -16,8 +16,13 @@ const Footer: React.FC<FooterProps> = () => {
         <Box
           display="grid"
           sx={{
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, 1fr)",
+              lg: "repeat(4, 1fr)",
+            },
             columnGap: 5,
+            rowGap: 5,
           }}
         >
           <Stack gap={3}>

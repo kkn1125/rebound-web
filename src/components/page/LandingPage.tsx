@@ -11,6 +11,7 @@ import { useRef } from "react";
 import { FiArrowDown, FiArrowRight } from "react-icons/fi";
 import CTButton from "../atom/CTButton";
 import SampleImage from "../atom/SampleImage";
+import SEOMetaTag from "@components/atom/SEOMetaTag";
 
 gsap.registerPlugin(ScrollToPlugin);
 
@@ -60,7 +61,7 @@ const processList = [
       "Rebound에서는 먼저 실패 경험을 기록합니다. 이 과정에서 실수를 정리하고, 배울 점을 발견하며, 이를 통해 성장의 첫걸음을 내딛을 수 있습니다.",
     src: "",
     width: 500,
-    height: "auto",
+    height: 200,
   },
   {
     title: "공감과 피드백",
@@ -68,7 +69,7 @@ const processList = [
       "다른 사용자들과 실패 경험을 공유하고 공감을 얻을 수 있습니다. 또한, 전문가 및 커뮤니티 피드백을 통해 더 나은 방향성을 모색할 수 있습니다.",
     src: "",
     width: 500,
-    height: "auto",
+    height: 200,
   },
   {
     title: "성장과 보상",
@@ -76,12 +77,14 @@ const processList = [
       "Time Coin을 활용하여 추가 피드백을 받거나, 자신의 경험을 바탕으로 더 깊은 인사이트를 얻을 수 있습니다. 실패를 성장으로 전환하는 과정에서 지속적인 동기 부여를 경험하세요.",
     src: "",
     width: 500,
-    height: "auto",
+    height: 200,
   },
 ];
 
-interface LandingPageProps {}
-const LandingPage: React.FC<LandingPageProps> = () => {
+interface LandingPageProps {
+  title: string;
+}
+const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
   const svgContainer = useRef<SVGElement>(null);
   const scrollContainer = useRef<HTMLDivElement>(null);
 
@@ -110,7 +113,14 @@ const LandingPage: React.FC<LandingPageProps> = () => {
 
   return (
     <Stack gap={10}>
-      <Toolbar sx={{ my: 5 }} />
+      <SEOMetaTag
+        title={title}
+        description="리바운드는 실패의 순간을 기록하고, 공감과 피드백을 통해 새로운
+            가능성을 발견하는 플랫폼입니다. 당신의 이야기가 누군가에게 용기가 될
+            수 있습니다."
+        keywords="rebound,failgram,실패경험,time-coin"
+      />
+      <Toolbar sx={{ my: { xs: 0, md: 5 } }} />
       {/* Main Section */}
       <Container
         maxWidth="xl"

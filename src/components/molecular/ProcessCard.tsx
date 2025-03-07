@@ -24,12 +24,12 @@ const ProcessCard: React.FC<ProcessCardProps> = ({
   return (
     <Stack
       direction={{
-        xs: reverse ? "column-reverse" : "column",
+        xs: reverse ? "column" : "column",
         md: reverse ? "row-reverse" : "row",
       }}
       gap={10}
       justifyContent="space-between"
-      alignItems="center"
+      alignItems={{ xs: "auto", md: "center" }}
     >
       <Stack flex={1} gap={2}>
         <Box>

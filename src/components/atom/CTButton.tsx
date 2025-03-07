@@ -6,12 +6,10 @@ interface CTButtonProps {
 
 const CTButton = styled(Button, {
   shouldForwardProp(props) {
-    return !["rounded"].includes(props);
+    return !["rounded"].includes(props as string);
   },
-})<ButtonProps & CTButtonProps>(
-  ({ rounded = false, theme }) => ({
-    borderRadius: rounded ? 9999 : 0,
-  })
-);
+})<ButtonProps & CTButtonProps>(({ rounded = false, theme }) => ({
+  borderRadius: rounded ? 9999 : 0,
+}));
 
 export default CTButton;

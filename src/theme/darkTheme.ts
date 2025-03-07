@@ -4,6 +4,8 @@ const darkTheme = {
   background: {
     default: "#0A1929", // 매우 어두운 블루
     paper: "#0D2137", // 딥 블루 계열의 배경색
+    dark: "#FFFFFF",
+    white: "#121212",
   },
   primary: {
     main: "#3F51B5", // 딥 블루

@@ -8,7 +8,7 @@ const AppRouter: React.FC<AppRouterProps> = () => {
     <Routes>
       <Route path="/">
         <Route element={<Layout />}>
-          <Route index element={<LandingPage />} />
+          <Route index element={<LandingPage title="Main" />} />
         </Route>
       </Route>
     </Routes>

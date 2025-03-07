@@ -6,6 +6,7 @@ const lightTheme = {
     default: "#F8F5F2",
     paper: "#EAEAEA",
     dark: "#353535",
+    white: "#FFFFFF",
   },
   primary: {
     main: "#5A67EE",

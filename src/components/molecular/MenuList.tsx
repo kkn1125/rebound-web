@@ -10,7 +10,12 @@ const menuList = [
 interface MenuListProps {}
 const MenuList: React.FC<MenuListProps> = () => {
   return (
-    <Stack direction="row" gap={3} alignItems="center">
+    <Stack
+      display={{ xs: "none", md: "flex" }}
+      direction="row"
+      gap={3}
+      alignItems="center"
+    >
       {menuList.map((menu) => (
         <Typography
           key={menu.name}
