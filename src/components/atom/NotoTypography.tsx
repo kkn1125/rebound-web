@@ -1,6 +1,4 @@
-import { styled, TypeText, Typography, TypographyProps } from "@mui/material";
-import darkTheme from "@theme/darkTheme";
-import lightTheme from "@theme/lightTheme";
+import { Link, TypeText, Typography, TypographyProps } from "@mui/material";
 
 type CustomProps = {
   mode?: "light" | "dark";
@@ -15,21 +13,28 @@ type CustomProps = {
     | `text${Capitalize<keyof TypeText>}`;
 };
 
-export const NotoTypography = styled(Typography, {
-  shouldForwardProp(props) {
-    return !["mode", "color", "italic"].includes(props as string);
-  },
-})<TypographyProps & CustomProps>(
-  ({ mode = "light", italic = false, color = "" }) => {
-    const isDark = mode === "dark";
-    const currentTheme = isDark ? darkTheme : lightTheme;
-    const replaceText = color
-      .replace("text", "")
-      .toLowerCase() as keyof TypeText;
-    return {
-      fontFamily: "'Noto Sans', sans-serif",
-      color: currentTheme.text?.[replaceText] || currentTheme.text?.primary,
-      fontStyle: italic ? "oblique 45deg" : "normal",
-    };
+export const NotoTypography = (
+  props: TypographyProps & CustomProps & { to?: string }
+) => {
+  const { italic = false, to, ...restProp } = props ?? {};
+
+  if (to) {
+    return (
+      <Typography
+        component={Link}
+        to={to}
+        {...restProp}
+        fontFamily="'Noto Sans', sans-serif"
+        fontStyle={italic ? "oblique 45deg" : "normal"}
+      />
+    );
   }
-);
+
+  return (
+    <Typography
+      {...restProp}
+      fontFamily="'Noto Sans', sans-serif"
+      fontStyle={italic ? "oblique 45deg" : "normal"}
+    />
+  );
+};

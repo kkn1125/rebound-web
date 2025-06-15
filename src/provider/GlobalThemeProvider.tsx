@@ -1,5 +1,6 @@
 import {
   createTheme,
+  CssBaseline,
   CssVarsThemeOptions,
   responsiveFontSizes,
   ThemeOptions,
@@ -115,7 +116,10 @@ const GlobalThemeProvider: React.FC<GlobalThemeProviderProps> = ({
 
   return (
     <ThemeContext.Provider value={colorMode}>
-      <ThemeProvider theme={memoizeTheme}>{children}</ThemeProvider>
+      <ThemeProvider theme={memoizeTheme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
     </ThemeContext.Provider>
   );
 };

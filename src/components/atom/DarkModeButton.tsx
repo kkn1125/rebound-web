@@ -1,4 +1,4 @@
-import { ThemeContext } from "@providers/GlobalThemeProvider";
+import { ThemeContext } from "@provider/context/ThemeContext";
 import { Button } from "@mui/material";
 import { useContext } from "react";
 

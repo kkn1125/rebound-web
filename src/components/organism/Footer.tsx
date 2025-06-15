@@ -1,3 +1,4 @@
+import type React from "react";
 import { NotoTypography } from "@components/atom/NotoTypography";
 import { SerifTypography } from "@components/atom/SerifTypography";
 import { Box, Container, Stack, SvgIcon } from "@mui/material";
@@ -7,8 +8,16 @@ import {
   FaFacebookF,
   FaLinkedinIn,
 } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
-interface FooterProps {}
+const socialLinks = [
+  { icon: FaInstagram, url: "https://instagram.com", label: "Instagram" },
+  { icon: FaXTwitter, url: "https://twitter.com", label: "Twitter" },
+  { icon: FaFacebookF, url: "https://facebook.com", label: "Facebook" },
+  { icon: FaLinkedinIn, url: "https://linkedin.com", label: "LinkedIn" },
+];
+
+type FooterProps = {};
 const Footer: React.FC<FooterProps> = () => {
   return (
     <Stack gap={5} my={10}>
@@ -28,55 +37,108 @@ const Footer: React.FC<FooterProps> = () => {
           <Stack gap={3}>
             <SerifTypography variant="h6">REBOUND</SerifTypography>
             <NotoTypography color="textDisabled">
-              세련미와 기능성이 조화를 이루는 디지털 경험을 만들어 브랜드를
-              새로운 차원으로 끌어올리세요.
+              실패를 성장으로 바꾸는 플랫폼. 당신의 경험이 누군가에게 용기가 될
+              수 있습니다.
             </NotoTypography>
           </Stack>
 
           <Stack gap={2}>
-            <SerifTypography>Navigation</SerifTypography>
-            <NotoTypography color="textDisabled">Home</NotoTypography>
-            <NotoTypography color="textDisabled">Intro</NotoTypography>
-            <NotoTypography color="textDisabled">Failgram</NotoTypography>
-            <NotoTypography color="textDisabled">Community</NotoTypography>
-          </Stack>
-
-          <Stack gap={2}>
-            <SerifTypography>Legal</SerifTypography>
-            <NotoTypography color="textDisabled">Privacy Policy</NotoTypography>
-            <NotoTypography color="textDisabled">
-              Terms of Service
+            <SerifTypography>서비스</SerifTypography>
+            <NotoTypography
+              component={Link}
+              to="/write"
+              color="textDisabled"
+              sx={{
+                textDecoration: "none",
+                "&:hover": { color: "primary.main" },
+              }}
+            >
+              Piece 작성
             </NotoTypography>
-            <NotoTypography color="textDisabled">Cookie Policy</NotoTypography>
+            <NotoTypography
+              component={Link}
+              to="/my-pieces"
+              color="textDisabled"
+              sx={{
+                textDecoration: "none",
+                "&:hover": { color: "primary.main" },
+              }}
+            >
+              내 Pieces
+            </NotoTypography>
+            <NotoTypography
+              component={Link}
+              to="/profile"
+              color="textDisabled"
+              sx={{
+                textDecoration: "none",
+                "&:hover": { color: "primary.main" },
+              }}
+            >
+              프로필
+            </NotoTypography>
           </Stack>
 
           <Stack gap={2}>
-            <SerifTypography>Connect</SerifTypography>
+            <SerifTypography>지원</SerifTypography>
+            <NotoTypography
+              component="a"
+              to="mailto:support@rebound.com"
+              color="textDisabled"
+              sx={{
+                textDecoration: "none",
+                "&:hover": { color: "primary.main" },
+              }}
+            >
+              고객지원
+            </NotoTypography>
+            <NotoTypography
+              component="a"
+              to="/privacy"
+              color="textDisabled"
+              sx={{
+                textDecoration: "none",
+                "&:hover": { color: "primary.main" },
+              }}
+            >
+              개인정보처리방침
+            </NotoTypography>
+            <NotoTypography
+              component="a"
+              to="/terms"
+              color="textDisabled"
+              sx={{
+                textDecoration: "none",
+                "&:hover": { color: "primary.main" },
+              }}
+            >
+              이용약관
+            </NotoTypography>
+          </Stack>
+
+          <Stack gap={2}>
+            <SerifTypography>소셜</SerifTypography>
             <Stack direction="row" gap={2}>
-              <SvgIcon
-                fontSize="medium"
-                sx={{ color: (theme) => theme.palette.text.disabled }}
-              >
-                <FaInstagram />
-              </SvgIcon>
-              <SvgIcon
-                fontSize="medium"
-                sx={{ color: (theme) => theme.palette.text.disabled }}
-              >
-                <FaXTwitter />
-              </SvgIcon>
-              <SvgIcon
-                fontSize="medium"
-                sx={{ color: (theme) => theme.palette.text.disabled }}
-              >
-                <FaFacebookF />
-              </SvgIcon>
-              <SvgIcon
-                fontSize="medium"
-                sx={{ color: (theme) => theme.palette.text.disabled }}
-              >
-                <FaLinkedinIn />
-              </SvgIcon>
+              {socialLinks.map((social) => (
+                <SvgIcon
+                  key={social.label}
+                  component="a"
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  fontSize="medium"
+                  sx={{
+                    color: (theme) => theme.palette.text.disabled,
+                    cursor: "pointer",
+                    transition: "color 0.2s ease",
+                    "&:hover": {
+                      color: "primary.main",
+                    },
+                  }}
+                >
+                  <social.icon />
+                </SvgIcon>
+              ))}
             </Stack>
           </Stack>
         </Box>
@@ -88,7 +150,7 @@ const Footer: React.FC<FooterProps> = () => {
         borderTop={(theme) => `1px solid ${theme.palette.background.paper}`}
       >
         <NotoTypography color="textDisabled">
-          &copy; 2025 Rebound. ALl rights reserved.
+          &copy; 2025 Rebound. All rights reserved.
         </NotoTypography>
       </Stack>
     </Stack>

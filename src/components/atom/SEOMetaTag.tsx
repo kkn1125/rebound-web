@@ -1,4 +1,4 @@
-import { COVER_IMAGE } from "@/config/constants";
+import { COVER_IMAGE } from "@/common/constants";
 import { BRAND, DEPLOY_URL } from "@/config/envs";
 import { Helmet } from "react-helmet";
 

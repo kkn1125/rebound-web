@@ -1,7 +1,10 @@
+"use client";
+
+import type React from "react";
 import { NotoTypography } from "@components/atom/NotoTypography";
 import ReviewAuthor from "@components/atom/ReviewAuthor";
 import { SerifTypography } from "@components/atom/SerifTypography";
-import { Stack } from "@mui/material";
+import { Stack, useTheme } from "@mui/material";
 
 interface ReviewCardProps {
   name: string;
@@ -9,23 +12,39 @@ interface ReviewCardProps {
   content: string;
 }
 const ReviewCard: React.FC<ReviewCardProps> = ({ name, role, content }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   return (
     <Stack
       gap={2}
       p={5}
       sx={{
-        background: (theme) => theme.palette.background.dark,
+        background: isDark
+          ? theme.palette.background.default
+          : theme.palette.background.paper,
         borderRadius: 3,
+        border: isDark ? `1px solid ${theme.palette.divider}` : "none",
       }}
     >
-      <SerifTypography mode="dark" fontSize={36}>
+      <SerifTypography
+        fontSize={36}
+        sx={{
+          color: isDark
+            ? theme.palette.text.primary
+            : theme.palette.dark.main,
+        }}
+      >
         "
       </SerifTypography>
       <NotoTypography
-        mode="dark"
         italic
         fontWeight={200}
-        color="textPrimary"
+        sx={{
+          color: isDark
+            ? theme.palette.text.secondary
+            : theme.palette.dark.main,
+        }}
       >
         {content}
       </NotoTypography>

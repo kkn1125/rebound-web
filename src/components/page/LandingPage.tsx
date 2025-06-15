@@ -1,17 +1,25 @@
+"use client";
+
+import type React from "react";
+
 import { NotoTypography } from "@components/atom/NotoTypography";
 import { SerifTypography } from "@components/atom/SerifTypography";
 import ProcessCard from "@components/molecular/ProcessCard";
 import ReviewCard from "@components/molecular/ReviewCard";
 import StepCard from "@components/molecular/StepCard";
+import InvertedSection from "@components/molecular/InvertedSection";
+import ThemeAwareIcon from "@components/atom/ThemeAwareIcon";
 import { useGSAP } from "@gsap/react";
-import { Box, Container, Stack, Toolbar } from "@mui/material";
+import { Box, Container, Stack, Toolbar, useTheme } from "@mui/material";
 import gsap from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { FiArrowDown, FiArrowRight } from "react-icons/fi";
 import CTButton from "../atom/CTButton";
 import SampleImage from "../atom/SampleImage";
 import SEOMetaTag from "@components/atom/SEOMetaTag";
+import { useLocation, Link } from "react-router-dom";
+import { COVER_IMAGE } from "@/common/constants";
 
 gsap.registerPlugin(ScrollToPlugin);
 
@@ -38,19 +46,19 @@ const reviewCardList = [
     name: "반나린",
     role: "Corporate Branding Associate, 주식회사 한율",
     content:
-      "확정될 정하는 정하는 모든 국제법규는 3년 죄를 침해받지 염려가 범하고.",
+      "처음엔 그냥 가볍게 써보자는 생각이었어요. 근데 조각 하나하나 쓰다 보니까 제 감정이 명확히 정리되는 걸 느꼈고, 어느새 제 실패가 저에게 의미 있는 이야기로 바뀌고 있더라고요.",
   },
   {
     name: "라이준",
     role: "Future Accountability Engineer, 우영 게임즈",
     content:
-      "유죄의 시설기준과 예술가의 확정될 아니한다. 장기 경우와 범죄를 거듭 범죄에.",
+      "실패를 기록하고 공유하는 게 부끄러운 줄 알았는데, 오히려 나와 비슷한 고민을 한 사람들의 이야기를 보면서 위로가 되었어요. 덕분에 나도 조금은 괜찮은 사람이란 생각이 들었죠.",
   },
   {
-    name: "황재민",
+    name: "황대민",
     role: "Dynamic Program Supervisor, 한국 세린",
     content:
-      "진흥하여야 아니한다. 아니한다. 증거인멸의 정하는 기능을 법률로 유죄의 형에 때까지는.",
+      "리바운드는 감정을 감추지 않아도 되는 공간이에요. 가볍게 한 줄 남기고 나면 그날의 마음을 내려놓은 것처럼 편안해져요. 저에게 꼭 필요한 작은 루틴이 되었어요.",
   },
 ];
 
@@ -87,6 +95,9 @@ interface LandingPageProps {
 const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
   const svgContainer = useRef<SVGElement>(null);
   const scrollContainer = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   /* on event에 적용 */
   const { contextSafe } = useGSAP({ scope: "html" }); // we can pass in a config object as the 1st parameter to make scoping simple
@@ -110,6 +121,31 @@ const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
     },
     { scope: svgContainer }
   );
+
+  // 다른 페이지에서 메인페이지로 이동했을 때 특정 섹션으로 스크롤
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      const sectionId = location.state.scrollTo;
+      const targetElement = document.querySelector(sectionId);
+
+      if (targetElement) {
+        // 페이지 로드 후 약간의 지연을 두고 스크롤
+        setTimeout(() => {
+          gsap.to(window, {
+            duration: 1,
+            scrollTo: {
+              y: targetElement,
+              offsetY: 80, // 헤더 높이만큼 오프셋
+            },
+            ease: "power2.out",
+          });
+        }, 100);
+      }
+
+      // state 정리
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   return (
     <Stack gap={10}>
@@ -153,6 +189,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
           </NotoTypography>
           <Stack direction="row" gap={1} mt={2}>
             <CTButton
+              component={Link}
+              to="/signup"
               size="large"
               color="dark"
               variant="contained"
@@ -160,9 +198,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
                 borderRadius: 50,
               }}
             >
-              Rebound 시작하기 <FiArrowRight />
+              Rebound 시작하기{" "}
+              <ThemeAwareIcon size={20}>
+                <FiArrowRight />
+              </ThemeAwareIcon>
             </CTButton>
             <CTButton
+              component={Link}
+              to="/stories"
               size="large"
               color="dark"
               variant="outlined"
@@ -176,7 +219,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
         </Stack>
 
         {/* Image */}
-        <SampleImage width={500} height={"auto"} />
+        <SampleImage width={500} height={"auto"} src={COVER_IMAGE} />
       </Container>
 
       {/* Scroll down */}
@@ -184,7 +227,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
         <CTButton color="dark" onClick={handleScrollDownSmoothly}>
           스크롤하여 탐색
         </CTButton>
-        <Box component={FiArrowDown} ref={svgContainer} />
+        <ThemeAwareIcon ref={svgContainer}>
+          <FiArrowDown />
+        </ThemeAwareIcon>
       </Container>
 
       {/* Explain Section */}
@@ -235,18 +280,30 @@ const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
         </Box>
       </Container>
 
-      {/* Customer Review Section */}
-      <Stack
-        id="failgram"
-        sx={{ background: (theme) => theme.palette.dark.main }}
-      >
+      {/* Customer Review Section - Theme Aware */}
+      <InvertedSection id="failgram">
         <Container maxWidth="xl">
           <Stack gap={5} py={15}>
             <Stack gap={1} alignItems="center">
-              <NotoTypography mode="dark" color="textCaption" variant="body1">
+              <NotoTypography
+                variant="body1"
+                sx={{
+                  color: isDark
+                    ? theme.palette.text.disabled
+                    : theme.palette.text.caption,
+                }}
+              >
                 이용 후기
               </NotoTypography>
-              <SerifTypography mode="dark" variant="h4" fontWeight={700}>
+              <SerifTypography
+                variant="h4"
+                fontWeight={700}
+                sx={{
+                  color: isDark
+                    ? theme.palette.text.primary
+                    : theme.palette.dark.contrastText,
+                }}
+              >
                 리바운더들의 이야기
               </SerifTypography>
             </Stack>
@@ -273,7 +330,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
             </Box>
           </Stack>
         </Container>
-      </Stack>
+      </InvertedSection>
 
       {/* Process */}
       <Container id="growth" maxWidth="xl" component={Stack} gap={5}>
@@ -306,11 +363,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
         </Stack>
       </Container>
 
-      {/* Contact */}
-      <Stack
-        id="community"
-        sx={{ background: (theme) => theme.palette.dark.main }}
-      >
+      {/* Contact - Theme Aware */}
+      <InvertedSection id="community">
         <Container maxWidth="xl">
           <Stack
             direction={{
@@ -323,28 +377,48 @@ const LandingPage: React.FC<LandingPageProps> = ({ title }) => {
             alignItems="center"
           >
             <Stack flex={1} gap={3}>
-              <SerifTypography mode="dark" variant="h4" fontWeight={700}>
+              <SerifTypography
+                variant="h4"
+                fontWeight={700}
+                sx={{
+                  color: isDark
+                    ? theme.palette.text.primary
+                    : theme.palette.dark.contrastText,
+                }}
+              >
                 실패를 성장으로 바꿀 준비가 되셨나요?
               </SerifTypography>
-              <NotoTypography mode="dark" variant="h6" color="textCaption">
+              <NotoTypography
+                variant="h6"
+                sx={{
+                  color: isDark
+                    ? theme.palette.text.disabled
+                    : theme.palette.text.caption,
+                }}
+              >
                 이제 당신의 실패 경험을 공유하고, 피드백을 받아 성장해 보세요.
                 리바운드와 함께 새로운 시작을 만들어 가세요.
               </NotoTypography>
               <Stack direction="row" gap={2}>
                 <CTButton
+                  component={Link}
+                  to="/signup"
                   rounded
-                  color="white"
+                  color={isDark ? "dark" : "white"}
                   variant="contained"
                   size="large"
                 >
-                  Rebound 시작하기 <FiArrowRight />
+                  Rebound 시작하기{" "}
+                  <ThemeAwareIcon size={20}>
+                    <FiArrowRight />
+                  </ThemeAwareIcon>
                 </CTButton>
               </Stack>
             </Stack>
             <SampleImage width={500} height={"auto"} />
           </Stack>
         </Container>
-      </Stack>
+      </InvertedSection>
     </Stack>
   );
 };

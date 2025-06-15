@@ -1,18 +1,18 @@
-import { PaletteOptions } from "@mui/material";
+import type { PaletteOptions } from "@mui/material";
 
 const darkTheme = {
   background: {
-    default: "#0A1929", // 매우 어두운 블루
-    paper: "#0D2137", // 딥 블루 계열의 배경색
+    default: "#0F1419", // 더 부드러운 다크 블루
+    paper: "#1A1F2E", // 약간 밝은 다크 블루
     dark: "#FFFFFF",
-    white: "#121212",
+    white: "#0F1419",
   },
   primary: {
-    main: "#3F51B5", // 딥 블루
+    main: "#4F8EF7", // 더 밝고 선명한 블루
   },
   secondary: {
-    main: "#7986CB", // 라이트 블루
-    dark: "#303F9F", // 다크 블루
+    main: "#8B9DC3", // 부드러운 라이트 블루
+    dark: "#5A6B8C", // 다크 블루
   },
   info: {
     main: "#64B5F6", // 스카이 블루
@@ -21,27 +21,27 @@ const darkTheme = {
     main: "#4CAF50", // 그린
   },
   error: {
-    main: "#F44336", // 브라이트 레드
+    main: "#FF6B6B", // 부드러운 레드
   },
   warning: {
-    main: "#FFC107", // 옐로우
+    main: "#FFB74D", // 부드러운 오렌지
   },
   dark: {
-    contrastText: "#121212",
+    contrastText: "#0F1419",
     main: "#FFFFFF",
   },
   white: {
     main: "#FFFFFF", // 화이트
   },
   text: {
-    primary: "#FFFFFF", // 화이트
-    secondary: "#B0BEC5", // 라이트 블루 그레이
-    disabled: "#9E9E9E",
-    white: "#121212",
-    caption: "#9E9E9E",
+    primary: "#E8EAED", // 부드러운 화이트
+    secondary: "#BDC1C6", // 중간 그레이
+    disabled: "#9AA0A6", // 연한 그레이
+    white: "#0F1419",
+    caption: "#80868B", // 캡션용 그레이
   },
-  GrayText: "#9E9E9E", // 미디엄 그레이
-  divider: "#37474F", // 다크 블루 그레이
+  GrayText: "#9AA0A6", // 미디엄 그레이
+  divider: "#3C4043", // 다크 그레이
   contrastThreshold: 3,
   tonalOffset: 0.2,
 } as PaletteOptions;
