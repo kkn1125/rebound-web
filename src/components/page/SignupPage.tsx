@@ -7,10 +7,11 @@ import { SerifTypography } from "@components/atom/SerifTypography"
 import SEOMetaTag from "@components/atom/SEOMetaTag"
 import CTButton from "@components/atom/CTButton"
 import Logo from "@components/atom/Logo"
-import { Container, Stack, TextField, Paper, Divider } from "@mui/material"
+import { Container, Stack, TextField, Paper, Divider, Alert } from "@mui/material"
 import { useState } from "react"
 import { FiUserPlus } from "react-icons/fi"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useCreateUser } from "@/hooks/queries/users"
 
 interface SignupPageProps {
   title: string
@@ -21,11 +22,27 @@ const SignupPage: React.FC<SignupPageProps> = ({ title }) => {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [nickname, setNickname] = useState("")
+  const navigate = useNavigate()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const createUserMutation = useCreateUser()
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement signup functionality
-    console.log({ email, password, confirmPassword, nickname })
+
+    try {
+      await createUserMutation.mutateAsync({
+        email,
+        username: nickname, // nickname을 username으로 사용
+        nickname,
+        password,
+        role: 1, // 일반 사용자
+      })
+
+      // 회원가입 성공 시 로그인 페이지로 이동
+      navigate("/login")
+    } catch (error) {
+      console.error("Signup failed:", error)
+    }
   }
 
   const isFormValid =
@@ -58,6 +75,16 @@ const SignupPage: React.FC<SignupPageProps> = ({ title }) => {
             </NotoTypography>
           </Stack>
         </Stack>
+
+        {/* Success Alert */}
+        {createUserMutation.isSuccess && (
+          <Alert severity="success">회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.</Alert>
+        )}
+
+        {/* Error Alert */}
+        {createUserMutation.isError && (
+          <Alert severity="error">회원가입에 실패했습니다. 입력 정보를 확인해주세요.</Alert>
+        )}
 
         {/* Signup Form */}
         <Paper
@@ -130,14 +157,14 @@ const SignupPage: React.FC<SignupPageProps> = ({ title }) => {
               size="large"
               variant="contained"
               color="dark"
-              disabled={!isFormValid}
+              disabled={!isFormValid || createUserMutation.isPending}
               sx={{
                 borderRadius: 3,
                 py: 1.5,
               }}
             >
               <FiUserPlus style={{ marginRight: 8 }} />
-              회원가입
+              {createUserMutation.isPending ? "가입 중..." : "회원가입"}
             </CTButton>
           </Stack>
         </Paper>

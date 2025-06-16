@@ -3,56 +3,15 @@
 import type React from "react"
 
 import { NotoTypography } from "@components/atom/NotoTypography"
-import PieceCard from "@components/atom/PieceCard"
-import SEOMetaTag from "@components/atom/SEOMetaTag"
 import { SerifTypography } from "@components/atom/SerifTypography"
+import SEOMetaTag from "@components/atom/SEOMetaTag"
 import StatCard from "@components/atom/StatCard"
-import { Avatar, Box, Container, Grid2, Stack, Tab, Tabs, Toolbar } from "@mui/material"
+import PieceCard from "@components/atom/PieceCard"
+import { Container, Stack, Avatar, Tabs, Tab, Toolbar, Box, Grid2, CircularProgress } from "@mui/material"
 import { useState } from "react"
-
-// Mock data - replace with actual data fetching
-const mockUser = {
-  id: "1",
-  nickname: "실패왕",
-  email: "user@example.com",
-  bio: "실패를 통해 성장하는 중입니다. 매일 조금씩 나아지고 있어요.",
-  avatar: "/placeholder.svg?height=120&width=120",
-  stats: {
-    posts: 12,
-    pieces: 8,
-  },
-}
-
-const mockPieces = [
-  {
-    id: "1",
-    content: "프로젝트 발표에서 완전히 망했다. 준비를 충분히 했다고 생각했는데 실제로는 부족했던 것 같다.",
-    emotions: ["disappointment", "shame"],
-    type: "work",
-    isPublic: true,
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    content: "친구와의 약속을 또 깜빡했다. 이런 일이 반복되면서 관계가 소원해지는 것 같아서 걱정이다.",
-    emotions: ["regret", "anxiety"],
-    type: "relationship",
-    isPublic: false,
-    createdAt: "2024-01-10",
-  },
-]
-
-const mockPosts = [
-  {
-    id: "1",
-    title: "첫 번째 실패 이야기",
-    content: "창업을 시도했다가 실패한 경험을 공유합니다...",
-    emotions: ["disappointment", "frustration"],
-    type: "work",
-    isPublic: true,
-    createdAt: "2024-01-20",
-  },
-]
+import { useUserMe } from "@/hooks/queries/users"
+import { useMyPieces, useDeletePiece } from "@/hooks/queries/pieces"
+import { useMyBuilds, useDeleteBuild } from "@/hooks/queries/builds"
 
 interface UserProfilePageProps {
   title: string
@@ -61,16 +20,74 @@ interface UserProfilePageProps {
 const UserProfilePage: React.FC<UserProfilePageProps> = ({ title }) => {
   const [currentTab, setCurrentTab] = useState(0)
 
+  const { data: user, isLoading: userLoading } = useUserMe()
+  const { data: pieces = [], isLoading: piecesLoading } = useMyPieces()
+  const { data: builds = [], isLoading: buildsLoading } = useMyBuilds()
+
+  const deletePieceMutation = useDeletePiece()
+  const deleteBuildMutation = useDeleteBuild()
+
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setCurrentTab(newValue)
   }
 
-  const handleEdit = (id: string) => {
-    console.log("Edit:", id)
+  const handleEditPiece = (id: string) => {
+    console.log("Edit piece:", id)
   }
 
-  const handleDelete = (id: string) => {
-    console.log("Delete:", id)
+  const handleDeletePiece = async (id: string) => {
+    if (window.confirm("정말로 이 조각을 삭제하시겠습니까?")) {
+      try {
+        await deletePieceMutation.mutateAsync(id)
+      } catch (error) {
+        console.error("Failed to delete piece:", error)
+      }
+    }
+  }
+
+  const handleEditBuild = (id: string) => {
+    console.log("Edit build:", id)
+  }
+
+  const handleDeleteBuild = async (id: string) => {
+    if (window.confirm("정말로 이 스토리를 삭제하시겠습니까?")) {
+      try {
+        await deleteBuildMutation.mutateAsync(id)
+      } catch (error) {
+        console.error("Failed to delete build:", error)
+      }
+    }
+  }
+
+  if (userLoading) {
+    return (
+      <Stack gap={5}>
+        <Toolbar />
+        <Container maxWidth="lg">
+          <Stack alignItems="center" justifyContent="center" minHeight="50vh">
+            <CircularProgress />
+            <NotoTypography variant="body1" color="textSecondary" mt={2}>
+              프로필을 불러오는 중...
+            </NotoTypography>
+          </Stack>
+        </Container>
+      </Stack>
+    )
+  }
+
+  if (!user) {
+    return (
+      <Stack gap={5}>
+        <Toolbar />
+        <Container maxWidth="lg">
+          <Stack alignItems="center" justifyContent="center" minHeight="50vh">
+            <NotoTypography variant="h6" color="error">
+              사용자 정보를 불러올 수 없습니다.
+            </NotoTypography>
+          </Stack>
+        </Container>
+      </Stack>
+    )
   }
 
   return (
@@ -87,13 +104,13 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ title }) => {
         <Stack gap={4}>
           {/* Profile Header */}
           <Stack alignItems="center" gap={3} textAlign="center">
-            <Avatar src={mockUser.avatar} sx={{ width: 120, height: 120 }} />
+            <Avatar sx={{ width: 120, height: 120 }}>{user.nickname.charAt(0)}</Avatar>
             <Stack gap={1}>
               <SerifTypography variant="h4" fontWeight={700}>
-                {mockUser.nickname}
+                {user.nickname}
               </SerifTypography>
               <NotoTypography variant="body1" color="textSecondary" maxWidth={400}>
-                {mockUser.bio}
+                {user.email}
               </NotoTypography>
             </Stack>
           </Stack>
@@ -101,10 +118,10 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ title }) => {
           {/* Statistics */}
           <Grid2 container spacing={3} justifyContent="center">
             <Grid2 size={{ xs: 6, sm: 3 }}>
-              <StatCard label="Posts" value={mockUser.stats.posts} />
+              <StatCard label="Stories" value={builds.length} />
             </Grid2>
             <Grid2 size={{ xs: 6, sm: 3 }}>
-              <StatCard label="Pieces" value={mockUser.stats.pieces} />
+              <StatCard label="Pieces" value={pieces.length} />
             </Grid2>
           </Grid2>
 
@@ -130,13 +147,26 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ title }) => {
               {currentTab === 0 && (
                 <Stack gap={3}>
                   <NotoTypography variant="h6" fontWeight={600}>
-                    내 이야기 ({mockPosts.length})
+                    내 이야기 ({builds.length})
                   </NotoTypography>
-                  {mockPosts.length > 0 ? (
+                  {buildsLoading ? (
+                    <Stack alignItems="center" py={4}>
+                      <CircularProgress size={24} />
+                    </Stack>
+                  ) : builds.length > 0 ? (
                     <Grid2 container spacing={3}>
-                      {mockPosts.map((post) => (
-                        <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={post.id}>
-                          <PieceCard {...post} onEdit={handleEdit} onDelete={handleDelete} />
+                      {builds.map((build) => (
+                        <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={build.id}>
+                          <PieceCard
+                            id={build.id.toString()}
+                            content={build.previewText}
+                            emotions={[build.representativeEmotion]}
+                            type="story" // 임시 타입
+                            isPublic={true} // 임시로 모든 빌드를 공개로 설정
+                            createdAt={build.createdAt}
+                            onEdit={handleEditBuild}
+                            onDelete={handleDeleteBuild}
+                          />
                         </Grid2>
                       ))}
                     </Grid2>
@@ -153,13 +183,26 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ title }) => {
               {currentTab === 1 && (
                 <Stack gap={3}>
                   <NotoTypography variant="h6" fontWeight={600}>
-                    내 Pieces ({mockPieces.length})
+                    내 Pieces ({pieces.length})
                   </NotoTypography>
-                  {mockPieces.length > 0 ? (
+                  {piecesLoading ? (
+                    <Stack alignItems="center" py={4}>
+                      <CircularProgress size={24} />
+                    </Stack>
+                  ) : pieces.length > 0 ? (
                     <Grid2 container spacing={3}>
-                      {mockPieces.map((piece) => (
+                      {pieces.map((piece) => (
                         <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={piece.id}>
-                          <PieceCard {...piece} onEdit={handleEdit} onDelete={handleDelete} />
+                          <PieceCard
+                            id={piece.id.toString()}
+                            content={piece.content}
+                            emotions={piece.emotionTags}
+                            type={piece.failureType}
+                            isPublic={piece.visibility === "public"}
+                            createdAt={piece.createdAt}
+                            onEdit={handleEditPiece}
+                            onDelete={handleDeletePiece}
+                          />
                         </Grid2>
                       ))}
                     </Grid2>

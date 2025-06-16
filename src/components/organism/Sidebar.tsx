@@ -1,33 +1,35 @@
 "use client";
 
-import type React from "react";
-import { NotoTypography } from "@components/atom/NotoTypography";
-import { SerifTypography } from "@components/atom/SerifTypography";
+import { useLogout } from "@/hooks/queries/auth";
 import CTButton from "@components/atom/CTButton";
 import NotificationBadge from "@components/atom/NotificationBadge";
-import NotificationPanel from "@components/organism/NotificationPanel";
+import { NotoTypography } from "@components/atom/NotoTypography";
+import { SerifTypography } from "@components/atom/SerifTypography";
 import ThemeAwareIcon from "@components/atom/ThemeAwareIcon";
+import NotificationPanel from "@components/organism/NotificationPanel";
+import { useGSAP } from "@gsap/react";
 import {
-  Stack,
   Avatar,
+  Box,
   Divider,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
-  Box,
+  Stack,
 } from "@mui/material";
+import { useAuth } from "@provider/AppStateProvider";
+import gsap from "gsap";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FiBookOpen,
-  FiSettings,
-  FiUser,
   FiEdit3,
   FiHome,
+  FiSettings,
+  FiUser,
 } from "react-icons/fi";
-import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
+import { Link, useNavigate } from "react-router-dom";
 
 const navigationItems = [
   { name: "피드", icon: <FiHome />, to: "/stories" },
@@ -51,6 +53,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const notificationRef = useRef<HTMLButtonElement>(null);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationCount] = useState(2); // Mock count
+
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
+  const logoutMutation = useLogout();
 
   useGSAP(() => {
     if (open) {
@@ -95,6 +101,16 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
   const handleNotificationClose = () => {
     setNotificationOpen(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      handleClose();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   useEffect(() => {
@@ -156,39 +172,71 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
         </Stack>
 
         {/* User Profile Section */}
-        <Stack alignItems="center" gap={2} px={3} pb={3}>
-          <Avatar
-            src="/placeholder.svg?height=80&width=80"
-            sx={{ width: 80, height: 80 }}
-          />
-          <SerifTypography variant="h6" fontWeight={600}>
-            UserName
-          </SerifTypography>
-          <Stack direction="row" gap={1}>
-            <CTButton
-              size="small"
-              variant="outlined"
-              color="dark"
-              component={Link}
-              to="/write"
-              onClick={handleClose}
-              sx={{ borderRadius: 20, fontSize: "0.75rem" }}
-            >
-              조각 기록
-            </CTButton>
-            <CTButton
-              size="small"
-              variant="outlined"
-              color="dark"
-              component={Link}
-              to="/assemble"
-              onClick={handleClose}
-              sx={{ borderRadius: 20, fontSize: "0.75rem" }}
-            >
-              글쓰기
-            </CTButton>
+        {isAuthenticated && user ? (
+          <Stack alignItems="center" gap={2} px={3} pb={3}>
+            <Avatar sx={{ width: 80, height: 80 }}>
+              {user.nickname.charAt(0)}
+            </Avatar>
+            <SerifTypography variant="h6" fontWeight={600}>
+              {user.nickname}
+            </SerifTypography>
+            <Stack direction="row" gap={1}>
+              <CTButton
+                size="small"
+                variant="outlined"
+                color="dark"
+                component={Link}
+                to="/write"
+                onClick={handleClose}
+                sx={{ borderRadius: 20, fontSize: "0.75rem" }}
+              >
+                조각 기록
+              </CTButton>
+              <CTButton
+                size="small"
+                variant="outlined"
+                color="dark"
+                component={Link}
+                to="/assemble"
+                onClick={handleClose}
+                sx={{ borderRadius: 20, fontSize: "0.75rem" }}
+              >
+                글쓰기
+              </CTButton>
+            </Stack>
           </Stack>
-        </Stack>
+        ) : (
+          <Stack alignItems="center" gap={2} px={3} pb={3}>
+            <Avatar sx={{ width: 80, height: 80 }}>?</Avatar>
+            <SerifTypography variant="h6" fontWeight={600}>
+              Guest
+            </SerifTypography>
+            <Stack direction="row" gap={1}>
+              <CTButton
+                size="small"
+                variant="outlined"
+                color="dark"
+                component={Link}
+                to="/login"
+                onClick={handleClose}
+                sx={{ borderRadius: 20, fontSize: "0.75rem" }}
+              >
+                로그인
+              </CTButton>
+              <CTButton
+                size="small"
+                variant="outlined"
+                color="dark"
+                component={Link}
+                to="/signup"
+                onClick={handleClose}
+                sx={{ borderRadius: 20, fontSize: "0.75rem" }}
+              >
+                회원가입
+              </CTButton>
+            </Stack>
+          </Stack>
+        )}
 
         <Divider />
 
@@ -227,46 +275,52 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           <Divider sx={{ my: 2 }} />
 
           {/* Account Section */}
-          <Stack px={3} pb={2}>
-            <NotoTypography
-              variant="subtitle2"
-              color="textSecondary"
-              fontWeight={600}
-              mb={1}
-            >
-              계정
-            </NotoTypography>
-          </Stack>
-
-          <List>
-            {accountItems.map((item) => (
-              <ListItem key={item.name} disablePadding>
-                <ListItemButton
-                  component={Link}
-                  to={item.to}
-                  onClick={handleClose}
-                  sx={{
-                    px: 3,
-                    py: 1.5,
-                    "&:hover": {
-                      backgroundColor: "action.hover",
-                    },
-                  }}
+          {isAuthenticated && (
+            <>
+              <Stack px={3} pb={2}>
+                <NotoTypography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  fontWeight={600}
+                  mb={1}
                 >
-                  <Box sx={{ mr: 2, display: "flex", alignItems: "center" }}>
-                    <ThemeAwareIcon size={20}>{item.icon}</ThemeAwareIcon>
-                  </Box>
-                  <ListItemText
-                    primary={
-                      <NotoTypography variant="body1" fontWeight={500}>
-                        {item.name}
-                      </NotoTypography>
-                    }
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+                  계정
+                </NotoTypography>
+              </Stack>
+
+              <List>
+                {accountItems.map((item) => (
+                  <ListItem key={item.name} disablePadding>
+                    <ListItemButton
+                      component={Link}
+                      to={item.to}
+                      onClick={handleClose}
+                      sx={{
+                        px: 3,
+                        py: 1.5,
+                        "&:hover": {
+                          backgroundColor: "action.hover",
+                        },
+                      }}
+                    >
+                      <Box
+                        sx={{ mr: 2, display: "flex", alignItems: "center" }}
+                      >
+                        <ThemeAwareIcon size={20}>{item.icon}</ThemeAwareIcon>
+                      </Box>
+                      <ListItemText
+                        primary={
+                          <NotoTypography variant="body1" fontWeight={500}>
+                            {item.name}
+                          </NotoTypography>
+                        }
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )}
         </Stack>
 
         {/* Bottom Actions */}
@@ -276,28 +330,56 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
           p={3}
           borderTop={(theme) => `1px solid ${theme.palette.divider}`}
         >
-          <CTButton
-            variant="outlined"
-            color="dark"
-            size="small"
-            sx={{ borderRadius: 20, flex: 1 }}
-            component={Link}
-            to="/settings"
-            onClick={handleClose}
-          >
-            설정
-          </CTButton>
-          <CTButton
-            variant="outlined"
-            color="dark"
-            size="small"
-            sx={{ borderRadius: 20, flex: 1 }}
-            component={Link}
-            to="/login"
-            onClick={handleClose}
-          >
-            로그아웃
-          </CTButton>
+          {isAuthenticated ? (
+            <>
+              <CTButton
+                variant="outlined"
+                color="dark"
+                size="small"
+                sx={{ borderRadius: 20, flex: 1 }}
+                component={Link}
+                to="/settings"
+                onClick={handleClose}
+              >
+                설정
+              </CTButton>
+              <CTButton
+                variant="outlined"
+                color="dark"
+                size="small"
+                sx={{ borderRadius: 20, flex: 1 }}
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+              >
+                {logoutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
+              </CTButton>
+            </>
+          ) : (
+            <>
+              <CTButton
+                variant="outlined"
+                color="dark"
+                size="small"
+                sx={{ borderRadius: 20, flex: 1 }}
+                component={Link}
+                to="/login"
+                onClick={handleClose}
+              >
+                로그인
+              </CTButton>
+              <CTButton
+                variant="outlined"
+                color="dark"
+                size="small"
+                sx={{ borderRadius: 20, flex: 1 }}
+                component={Link}
+                to="/signup"
+                onClick={handleClose}
+              >
+                회원가입
+              </CTButton>
+            </>
+          )}
         </Stack>
       </Box>
 

@@ -19,10 +19,14 @@ import {
   Switch,
   Paper,
   Toolbar,
+  Alert,
 } from "@mui/material"
 import { useState } from "react"
 import { FiSave } from "react-icons/fi"
 import { FailureTypeLabels, FailureTypesList } from "@/common/enums/failureTypes"
+import { useCreatePiece } from "@/hooks/queries/pieces"
+import { useNavigate } from "react-router-dom"
+import type { EmotionTag, FailureType } from "@/types/api"
 
 interface PieceWritingPageProps {
   title: string
@@ -33,19 +37,28 @@ const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
   const [failureType, setFailureType] = useState("")
   const [isPublic, setIsPublic] = useState(true)
+  const navigate = useNavigate()
+
+  const createPieceMutation = useCreatePiece()
 
   const handleEmotionToggle = (emotion: string) => {
     setSelectedEmotions((prev) => (prev.includes(emotion) ? prev.filter((e) => e !== emotion) : [...prev, emotion]))
   }
 
-  const handleSubmit = () => {
-    // TODO: Implement save functionality
-    console.log({
-      content,
-      emotions: selectedEmotions,
-      type: failureType,
-      isPublic,
-    })
+  const handleSubmit = async () => {
+    try {
+      await createPieceMutation.mutateAsync({
+        content,
+        emotionTags: selectedEmotions as EmotionTag[],
+        failureType: failureType as FailureType,
+        visibility: isPublic ? "public" : "private",
+      })
+
+      // 성공 시 내 조각함으로 이동
+      navigate("/my-pieces")
+    } catch (error) {
+      console.error("Failed to create piece:", error)
+    }
   }
 
   const isFormValid = content.trim().length > 0 && failureType && selectedEmotions.length > 0
@@ -72,6 +85,12 @@ const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
               있습니다.
             </NotoTypography>
           </Stack>
+
+          {/* Success Alert */}
+          {createPieceMutation.isSuccess && <Alert severity="success">조각이 성공적으로 저장되었습니다!</Alert>}
+
+          {/* Error Alert */}
+          {createPieceMutation.isError && <Alert severity="error">조각 저장에 실패했습니다. 다시 시도해주세요.</Alert>}
 
           {/* Form */}
           <Paper
@@ -151,7 +170,7 @@ const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
                 size="large"
                 variant="contained"
                 color="dark"
-                disabled={!isFormValid}
+                disabled={!isFormValid || createPieceMutation.isPending}
                 onClick={handleSubmit}
                 sx={{
                   borderRadius: 3,
@@ -159,7 +178,7 @@ const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
                 }}
               >
                 <FiSave style={{ marginRight: 8 }} />
-                실패 조각 저장하기
+                {createPieceMutation.isPending ? "저장 중..." : "실패 조각 저장하기"}
               </CTButton>
             </Stack>
           </Paper>

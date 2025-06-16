@@ -1,82 +1,117 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { NotoTypography } from "@components/atom/NotoTypography"
-import { SerifTypography } from "@components/atom/SerifTypography"
-import SEOMetaTag from "@components/atom/SEOMetaTag"
-import CTButton from "@components/atom/CTButton"
-import PieceCard from "@components/atom/PieceCard"
-import PieceFilters from "@components/molecular/PieceFilters"
-import { Container, Stack, Grid, Toolbar, Box, Typography } from "@mui/material"
-import { useState } from "react"
-import { FiPlus } from "react-icons/fi"
-import { Link } from "react-router-dom"
-
-// Mock data - replace with actual data fetching
-const mockPieces = [
-  {
-    id: "1",
-    content:
-      "프로젝트 발표에서 완전히 망했다. 준비를 충분히 했다고 생각했는데 실제로는 부족했던 것 같다. 팀원들에게 미안하고 나 자신이 실망스럽다.",
-    emotions: ["disappointment", "shame"],
-    type: "work",
-    isPublic: true,
-    createdAt: "2024-01-15T14:30:00",
-  },
-  {
-    id: "2",
-    content: "친구와의 약속을 또 깜빡했다. 이런 일이 반복되면서 관계가 소원해지는 것 같아서 걱정이다.",
-    emotions: ["regret", "anxiety"],
-    type: "relationship",
-    isPublic: false,
-    createdAt: "2024-01-10T12:15:00",
-  },
-  {
-    id: "3",
-    content: "운동을 꾸준히 하겠다고 다짐했지만 일주일도 못 버텼다. 의지력이 부족한 나 자신이 한심하다.",
-    emotions: ["frustration", "disappointment"],
-    type: "health",
-    isPublic: true,
-    createdAt: "2024-01-05T16:45:00",
-  },
-]
+import { useAppState } from "@/contexts/APpStateContext";
+import { useDeletePiece, useMyPieces } from "@/hooks/queries/pieces";
+import type { EmotionTag, FailureType } from "@/types/api";
+import CTButton from "@components/atom/CTButton";
+import { NotoTypography } from "@components/atom/NotoTypography";
+import PieceCard from "@components/atom/PieceCard";
+import SEOMetaTag from "@components/atom/SEOMetaTag";
+import { SerifTypography } from "@components/atom/SerifTypography";
+import PieceFilters from "@components/molecular/PieceFilters";
+import {
+  Box,
+  CircularProgress,
+  Container,
+  Grid2,
+  Stack,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import { FiPlus } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 interface MyPiecesPageProps {
-  title: string
+  title: string;
 }
 
 const MyPiecesPage: React.FC<MyPiecesPageProps> = ({ title }) => {
-  const [pieces] = useState(mockPieces)
-  const [selectedType, setSelectedType] = useState("")
-  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
+  const { pieceFilters, setPieceFilters } = useAppState();
+
+  const {
+    data: pieces = [],
+    isLoading,
+    error,
+  } = useMyPieces({
+    emotionTag: pieceFilters.emotionTag,
+    failureType: pieceFilters.failureType,
+    visibility: pieceFilters.visibility,
+    search: pieceFilters.search || undefined,
+  });
+
+  const deletePieceMutation = useDeletePiece();
 
   const handleEmotionToggle = (emotion: string) => {
-    setSelectedEmotions((prev) => (prev.includes(emotion) ? prev.filter((e) => e !== emotion) : [...prev, emotion]))
-  }
+    setPieceFilters((prev) => ({
+      ...prev,
+      emotionTag:
+        prev.emotionTag === emotion ? undefined : (emotion as EmotionTag),
+    }));
+  };
+
+  const handleTypeChange = (type: string) => {
+    setPieceFilters((prev) => ({
+      ...prev,
+      failureType: (type as FailureType) || undefined,
+    }));
+  };
 
   const handleClearFilters = () => {
-    setSelectedType("")
-    setSelectedEmotions([])
-  }
+    setPieceFilters({
+      emotionTag: undefined,
+      failureType: undefined,
+      visibility: undefined,
+      search: "",
+    });
+  };
 
   const handleEdit = (id: string) => {
     // TODO: Navigate to edit page
-    console.log("Edit piece:", id)
+    console.log("Edit piece:", id);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("정말로 이 조각을 삭제하시겠습니까?")) {
+      try {
+        await deletePieceMutation.mutateAsync(id);
+      } catch (error) {
+        console.error("Failed to delete piece:", error);
+      }
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Stack gap={5}>
+        <Toolbar />
+        <Container maxWidth="xl">
+          <Stack alignItems="center" justifyContent="center" minHeight="50vh">
+            <CircularProgress />
+            <NotoTypography variant="body1" color="textSecondary" mt={2}>
+              조각을 불러오는 중...
+            </NotoTypography>
+          </Stack>
+        </Container>
+      </Stack>
+    );
   }
 
-  const handleDelete = (id: string) => {
-    // TODO: Implement delete functionality
-    console.log("Delete piece:", id)
+  if (error) {
+    return (
+      <Stack gap={5}>
+        <Toolbar />
+        <Container maxWidth="xl">
+          <Stack alignItems="center" justifyContent="center" minHeight="50vh">
+            <NotoTypography variant="h6" color="error">
+              조각을 불러오는데 실패했습니다.
+            </NotoTypography>
+          </Stack>
+        </Container>
+      </Stack>
+    );
   }
-
-  // Filter pieces based on selected filters
-  const filteredPieces = pieces.filter((piece) => {
-    const typeMatch = !selectedType || piece.type === selectedType
-    const emotionMatch =
-      selectedEmotions.length === 0 || selectedEmotions.some((emotion) => piece.emotions.includes(emotion))
-    return typeMatch && emotionMatch
-  })
 
   return (
     <Stack gap={5}>
@@ -91,7 +126,11 @@ const MyPiecesPage: React.FC<MyPiecesPageProps> = ({ title }) => {
       <Container maxWidth="xl">
         <Stack gap={4}>
           {/* Header */}
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Stack gap={1}>
               <SerifTypography variant="h4" fontWeight={700}>
                 내 조각함
@@ -100,51 +139,74 @@ const MyPiecesPage: React.FC<MyPiecesPageProps> = ({ title }) => {
                 총 {pieces.length}개의 실패 조각이 있습니다
               </NotoTypography>
             </Stack>
-            <CTButton component={Link} to="/write" variant="contained" color="dark" sx={{ borderRadius: 3 }}>
+            <CTButton
+              component={Link}
+              to="/write"
+              variant="contained"
+              color="dark"
+              sx={{ borderRadius: 3 }}
+            >
               <FiPlus style={{ marginRight: 8 }} />새 조각 작성
             </CTButton>
           </Stack>
 
-          <Grid container spacing={4}>
+          <Grid2 container spacing={4}>
             {/* Filters Sidebar */}
-            <Grid item xs={12} md={3}>
+            <Grid2 size={{ xs: 12, md: 3 }}>
               <Box sx={{ position: "sticky", top: 100 }}>
                 <PieceFilters
-                  selectedType={selectedType}
-                  selectedEmotions={selectedEmotions}
-                  onTypeChange={setSelectedType}
+                  selectedType={pieceFilters.failureType || ""}
+                  selectedEmotions={
+                    pieceFilters.emotionTag ? [pieceFilters.emotionTag] : []
+                  }
+                  onTypeChange={handleTypeChange}
                   onEmotionToggle={handleEmotionToggle}
                   onClearFilters={handleClearFilters}
                 />
               </Box>
-            </Grid>
+            </Grid2>
 
             {/* Pieces List */}
-            <Grid item xs={12} md={9}>
-              {filteredPieces.length > 0 ? (
-                <Grid container spacing={3}>
-                  {filteredPieces.map((piece) => (
-                    <Grid item xs={12} sm={6} lg={4} key={piece.id}>
-                      <PieceCard {...piece} onEdit={handleEdit} onDelete={handleDelete} />
-                    </Grid>
+            <Grid2 size={{ xs: 12, md: 9 }}>
+              {pieces.length > 0 ? (
+                <Grid2 container spacing={3}>
+                  {pieces.map((piece) => (
+                    <Grid2 size={{ xs: 12, sm: 6, lg: 4 }} key={piece.id}>
+                      <PieceCard
+                        id={piece.id.toString()}
+                        content={piece.content}
+                        emotions={piece.emotionTags}
+                        type={piece.failureType}
+                        isPublic={piece.visibility === "public"}
+                        createdAt={piece.createdAt}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    </Grid2>
                   ))}
-                </Grid>
+                </Grid2>
               ) : (
                 <Stack alignItems="center" gap={2} py={8}>
                   <Typography variant="h6" color="textSecondary">
                     아직 기록된 조각이 없습니다
                   </Typography>
-                  <CTButton component={Link} to="/write" variant="outlined" color="dark" sx={{ borderRadius: 3 }}>
+                  <CTButton
+                    component={Link}
+                    to="/write"
+                    variant="outlined"
+                    color="dark"
+                    sx={{ borderRadius: 3 }}
+                  >
                     첫 번째 조각 기록하기
                   </CTButton>
                 </Stack>
               )}
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Stack>
       </Container>
     </Stack>
-  )
-}
+  );
+};
 
-export default MyPiecesPage
+export default MyPiecesPage;

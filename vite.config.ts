@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       "process.env": {
         DEPLOY_URL: isDev
-          ? "http://localhost:5000"
+          ? "http://localhost:8080"
           : "https://kkn1125.github.io/rebound-web",
         BRAND: "rebound",
       },
