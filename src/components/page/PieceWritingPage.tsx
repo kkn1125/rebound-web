@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import type React from "react";
+import type React from "react"
 
-import { NotoTypography } from "@components/atom/NotoTypography";
-import { SerifTypography } from "@components/atom/SerifTypography";
-import SEOMetaTag from "@components/atom/SEOMetaTag";
-import CTButton from "@components/atom/CTButton";
-import EmotionSelector from "@components/molecular/EmotionSelector";
+import { NotoTypography } from "@components/atom/NotoTypography"
+import { SerifTypography } from "@components/atom/SerifTypography"
+import SEOMetaTag from "@components/atom/SEOMetaTag"
+import CTButton from "@components/atom/CTButton"
+import EmotionSelector from "@components/molecular/EmotionSelector"
 import {
   Container,
   Stack,
@@ -19,31 +19,24 @@ import {
   Switch,
   Paper,
   Toolbar,
-} from "@mui/material";
-import { useState } from "react";
-import { FiSave } from "react-icons/fi";
-import {
-  FailureTypeLabels,
-  FailureTypesList,
-} from "@/common/enums/failureTypes";
+} from "@mui/material"
+import { useState } from "react"
+import { FiSave } from "react-icons/fi"
+import { FailureTypeLabels, FailureTypesList } from "@/common/enums/failureTypes"
 
 interface PieceWritingPageProps {
-  title: string;
+  title: string
 }
 
 const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
-  const [content, setContent] = useState("");
-  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
-  const [failureType, setFailureType] = useState("");
-  const [isPublic, setIsPublic] = useState(true);
+  const [content, setContent] = useState("")
+  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
+  const [failureType, setFailureType] = useState("")
+  const [isPublic, setIsPublic] = useState(true)
 
   const handleEmotionToggle = (emotion: string) => {
-    setSelectedEmotions((prev) =>
-      prev.includes(emotion)
-        ? prev.filter((e) => e !== emotion)
-        : [...prev, emotion]
-    );
-  };
+    setSelectedEmotions((prev) => (prev.includes(emotion) ? prev.filter((e) => e !== emotion) : [...prev, emotion]))
+  }
 
   const handleSubmit = () => {
     // TODO: Implement save functionality
@@ -52,11 +45,10 @@ const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
       emotions: selectedEmotions,
       type: failureType,
       isPublic,
-    });
-  };
+    })
+  }
 
-  const isFormValid =
-    content.trim().length > 0 && failureType && selectedEmotions.length > 0;
+  const isFormValid = content.trim().length > 0 && failureType && selectedEmotions.length > 0
 
   return (
     <Stack gap={5}>
@@ -73,11 +65,11 @@ const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
           {/* Header */}
           <Stack gap={2} alignItems="center" textAlign="center">
             <SerifTypography variant="h4" fontWeight={700}>
-              새로운 조각 작성
+              실패 조각 기록하기
             </SerifTypography>
             <NotoTypography variant="body1" color="textSecondary">
-              실패의 순간을 솔직하게 기록해보세요. 당신의 경험이 누군가에게
-              위로가 될 수 있습니다.
+              실패의 순간을 하나의 조각으로 기록해보세요. 나중에 여러 조각을 조립하여 완성된 리바운드 스토리를 만들 수
+              있습니다.
             </NotoTypography>
           </Stack>
 
@@ -109,20 +101,13 @@ const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
                     },
                   }}
                 />
-                <NotoTypography
-                  variant="caption"
-                  color="textDisabled"
-                  textAlign="right"
-                >
+                <NotoTypography variant="caption" color="textDisabled" textAlign="right">
                   {content.length}/300
                 </NotoTypography>
               </Stack>
 
               {/* Emotion Selector */}
-              <EmotionSelector
-                selectedEmotions={selectedEmotions}
-                onEmotionToggle={handleEmotionToggle}
-              />
+              <EmotionSelector selectedEmotions={selectedEmotions} onEmotionToggle={handleEmotionToggle} />
 
               {/* Failure Type */}
               <Stack gap={1}>
@@ -152,17 +137,10 @@ const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
                   공개 설정
                 </NotoTypography>
                 <FormControlLabel
-                  control={
-                    <Switch
-                      checked={isPublic}
-                      onChange={(e) => setIsPublic(e.target.checked)}
-                    />
-                  }
+                  control={<Switch checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />}
                   label={
                     <NotoTypography variant="body2" color="textSecondary">
-                      {isPublic
-                        ? "공개 - 다른 사용자들이 볼 수 있습니다"
-                        : "비공개 - 나만 볼 수 있습니다"}
+                      {isPublic ? "공개 - 다른 사용자들이 볼 수 있습니다" : "비공개 - 나만 볼 수 있습니다"}
                     </NotoTypography>
                   }
                 />
@@ -181,14 +159,14 @@ const PieceWritingPage: React.FC<PieceWritingPageProps> = ({ title }) => {
                 }}
               >
                 <FiSave style={{ marginRight: 8 }} />
-                조각 저장하기
+                실패 조각 저장하기
               </CTButton>
             </Stack>
           </Paper>
         </Stack>
       </Container>
     </Stack>
-  );
-};
+  )
+}
 
-export default PieceWritingPage;
+export default PieceWritingPage

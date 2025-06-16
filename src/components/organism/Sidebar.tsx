@@ -17,18 +17,26 @@ import {
   ListItemText,
   Box,
 } from "@mui/material";
-import { FiBookOpen, FiSettings, FiUser } from "react-icons/fi";
+import {
+  FiBookOpen,
+  FiSettings,
+  FiUser,
+  FiEdit3,
+  FiHome,
+} from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 const navigationItems = [
-  { name: "이야기 보기", icon: <FiBookOpen />, to: "/stories" },
+  { name: "피드", icon: <FiHome />, to: "/stories" },
+  { name: "글쓰기", icon: <FiEdit3 />, to: "/assemble" },
+  { name: "내 조각함", icon: <FiBookOpen />, to: "/my-pieces" },
 ];
 
 const accountItems = [
-  { name: "프로필", icon: <FiUser />, to: "/profile" },
+  { name: "마이페이지", icon: <FiUser />, to: "/profile" },
   { name: "설정", icon: <FiSettings />, to: "/settings" },
 ];
 
@@ -166,18 +174,18 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
               onClick={handleClose}
               sx={{ borderRadius: 20, fontSize: "0.75rem" }}
             >
-              조각 작성
+              조각 기록
             </CTButton>
             <CTButton
               size="small"
               variant="outlined"
               color="dark"
               component={Link}
-              to="/my-pieces"
+              to="/assemble"
               onClick={handleClose}
               sx={{ borderRadius: 20, fontSize: "0.75rem" }}
             >
-              내 조각들
+              글쓰기
             </CTButton>
           </Stack>
         </Stack>

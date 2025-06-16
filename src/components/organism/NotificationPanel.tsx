@@ -82,7 +82,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
         {
           opacity: 0,
           scale: 0.95,
-          transformOrigin: "top right",
+          transformOrigin: "top left",
         },
         {
           opacity: 1,
@@ -172,12 +172,12 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
 
   // Calculate position based on anchor element
   const getPosition = () => {
-    if (!anchorEl) return { top: 60, right: 20 };
+    if (!anchorEl) return { top: 60, left: 20 };
 
     const rect = anchorEl.getBoundingClientRect();
     return {
       top: rect.bottom + 8,
-      right: window.innerWidth - rect.right,
+      left: rect.right,
     };
   };
 
@@ -190,7 +190,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
       sx={{
         position: "fixed",
         top: position.top,
-        right: position.right,
+        left: position.left,
         width: 380,
         maxHeight: 500,
         zIndex: 1400,

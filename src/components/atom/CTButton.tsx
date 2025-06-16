@@ -1,19 +1,30 @@
-import { Button, ButtonProps, styled } from "@mui/material";
+import { Button, ButtonProps, Theme } from "@mui/material";
 
 interface CTButtonProps {
   rounded?: boolean;
   to?: string; // to 추가
 }
 
-const CTButton = styled(Button, {
-  shouldForwardProp(props) {
-    // "rounded"만 필터링, "to"는 Button으로 전달
-    return !["rounded"].includes(props as string);
-  },
-})<ButtonProps & CTButtonProps>(({ rounded = false }) => ({
-  borderRadius: rounded ? 9999 : 0,
-  textDecoration: "none",
-}));
+const CTButton = (props: ButtonProps & CTButtonProps) => {
+  const { rounded = false, to, ...rest } = props;
+  return (
+    <Button
+      {...rest}
+      sx={(theme: Theme) => ({
+        borderRadius: rounded ? 9999 : 0,
+        textDecoration: "none",
+        color:
+          rest.variant === "contained"
+            ? theme.palette.getContrastText(
+                rest.color === "white"
+                  ? theme.palette.text.white
+                  : theme.palette.text.primary
+              )
+            : "inherit",
+      })}
+    />
+  );
+};
 
 const CTButtonLink = (props: CTButtonProps & ButtonProps) => {
   if (props.to) {

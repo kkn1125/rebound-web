@@ -11,6 +11,10 @@ interface ProcessCardProps {
   src?: string;
   width?: number | string;
   height?: number | string;
+  img?: {
+    width: number;
+    height: number;
+  };
 }
 const ProcessCard: React.FC<ProcessCardProps> = ({
   reverse = false,
@@ -20,6 +24,7 @@ const ProcessCard: React.FC<ProcessCardProps> = ({
   src,
   width,
   height,
+  img,
 }) => {
   return (
     <Stack
@@ -42,17 +47,23 @@ const ProcessCard: React.FC<ProcessCardProps> = ({
           {content}
         </NotoTypography>
       </Stack>
-      {src && (
+      {/* {src && (
         <Box
           flex={1}
           component="img"
           src={src}
           alt={title}
-          width={width}
-          height={height ?? "auto"}
+          width={img?.width ?? width ?? 500}
+          height={img?.height ?? height ?? "auto"}
         />
-      )}
-      {!src && <SampleImage width={width ?? 500} height={height ?? "auto"} />}
+      )} */}
+      {/* {!src && ( */}
+        <SampleImage
+          src={src}
+          width={img?.width ?? width ?? 500}
+          height={img?.height ?? height ?? "auto"}
+        />
+      {/* // )} */}
     </Stack>
   );
 };

@@ -53,7 +53,7 @@ const Footer: React.FC<FooterProps> = () => {
                 "&:hover": { color: "primary.main" },
               }}
             >
-              Piece 작성
+              조각 작성
             </NotoTypography>
             <NotoTypography
               component={Link}
@@ -64,7 +64,7 @@ const Footer: React.FC<FooterProps> = () => {
                 "&:hover": { color: "primary.main" },
               }}
             >
-              내 Pieces
+              내 조각들
             </NotoTypography>
             <NotoTypography
               component={Link}

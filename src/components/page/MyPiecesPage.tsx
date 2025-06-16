@@ -94,10 +94,10 @@ const MyPiecesPage: React.FC<MyPiecesPageProps> = ({ title }) => {
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack gap={1}>
               <SerifTypography variant="h4" fontWeight={700}>
-                내 조각들
+                내 조각함
               </SerifTypography>
               <NotoTypography variant="body1" color="textSecondary">
-                총 {pieces.length}개의 조각이 있습니다
+                총 {pieces.length}개의 실패 조각이 있습니다
               </NotoTypography>
             </Stack>
             <CTButton component={Link} to="/write" variant="contained" color="dark" sx={{ borderRadius: 3 }}>
@@ -132,10 +132,10 @@ const MyPiecesPage: React.FC<MyPiecesPageProps> = ({ title }) => {
               ) : (
                 <Stack alignItems="center" gap={2} py={8}>
                   <Typography variant="h6" color="textSecondary">
-                    조건에 맞는 조각이 없습니다
+                    아직 기록된 조각이 없습니다
                   </Typography>
                   <CTButton component={Link} to="/write" variant="outlined" color="dark" sx={{ borderRadius: 3 }}>
-                    첫 번째 조각 작성하기
+                    첫 번째 조각 기록하기
                   </CTButton>
                 </Stack>
               )}

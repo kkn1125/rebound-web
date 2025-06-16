@@ -7,7 +7,7 @@ import { forwardRef } from "react";
 interface ThemeAwareIconProps {
   children: ReactNode;
   size?: number;
-  color?: "primary" | "secondary" | "inherit" | "auto";
+  color?: "primary" | "secondary" | "contrast" | "inherit" | "auto";
   sx?: any;
 }
 
@@ -22,6 +22,8 @@ const ThemeAwareIcon = forwardRef<SVGElement, ThemeAwareIconProps>(
           return theme.palette.primary.main;
         case "secondary":
           return theme.palette.secondary.main;
+        case "contrast":
+          return isDark ? theme.palette.text.primary : theme.palette.text.white;
         case "inherit":
           return "inherit";
         case "auto":

@@ -3,11 +3,11 @@
 import type React from "react"
 
 import { NotoTypography } from "@components/atom/NotoTypography"
-import { SerifTypography } from "@components/atom/SerifTypography"
-import SEOMetaTag from "@components/atom/SEOMetaTag"
-import StatCard from "@components/atom/StatCard"
 import PieceCard from "@components/atom/PieceCard"
-import { Container, Stack, Avatar, Tabs, Tab, Grid, Toolbar, Box, Typography } from "@mui/material"
+import SEOMetaTag from "@components/atom/SEOMetaTag"
+import { SerifTypography } from "@components/atom/SerifTypography"
+import StatCard from "@components/atom/StatCard"
+import { Avatar, Box, Container, Grid2, Stack, Tab, Tabs, Toolbar } from "@mui/material"
 import { useState } from "react"
 
 // Mock data - replace with actual data fetching
@@ -99,14 +99,14 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ title }) => {
           </Stack>
 
           {/* Statistics */}
-          <Grid container spacing={3} justifyContent="center">
-            <Grid item xs={6} sm={3}>
+          <Grid2 container spacing={3} justifyContent="center">
+            <Grid2 size={{ xs: 6, sm: 3 }}>
               <StatCard label="Posts" value={mockUser.stats.posts} />
-            </Grid>
-            <Grid item xs={6} sm={3}>
+            </Grid2>
+            <Grid2 size={{ xs: 6, sm: 3 }}>
               <StatCard label="Pieces" value={mockUser.stats.pieces} />
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
 
           {/* Content Tabs */}
           <Stack gap={3}>
@@ -121,8 +121,8 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ title }) => {
                 },
               }}
             >
-              <Tab label="내 Posts" />
-              <Tab label="내 Pieces" />
+              <Tab label="내 이야기" />
+              <Tab label="내 조각들" />
             </Tabs>
 
             {/* Tab Content */}
@@ -130,21 +130,21 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ title }) => {
               {currentTab === 0 && (
                 <Stack gap={3}>
                   <NotoTypography variant="h6" fontWeight={600}>
-                    내 Posts ({mockPosts.length})
+                    내 이야기 ({mockPosts.length})
                   </NotoTypography>
                   {mockPosts.length > 0 ? (
-                    <Grid container spacing={3}>
+                    <Grid2 container spacing={3}>
                       {mockPosts.map((post) => (
-                        <Grid item xs={12} sm={6} md={4} key={post.id}>
+                        <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={post.id}>
                           <PieceCard {...post} onEdit={handleEdit} onDelete={handleDelete} />
-                        </Grid>
+                        </Grid2>
                       ))}
-                    </Grid>
+                    </Grid2>
                   ) : (
                     <Stack alignItems="center" gap={2} py={8}>
-                      <Typography variant="h6" color="textSecondary">
-                        아직 작성한 Post가 없습니다
-                      </Typography>
+                      <NotoTypography variant="h6" color="textSecondary">
+                        아직 작성한 이야기가 없습니다
+                      </NotoTypography>
                     </Stack>
                   )}
                 </Stack>
@@ -156,18 +156,18 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ title }) => {
                     내 Pieces ({mockPieces.length})
                   </NotoTypography>
                   {mockPieces.length > 0 ? (
-                    <Grid container spacing={3}>
+                    <Grid2 container spacing={3}>
                       {mockPieces.map((piece) => (
-                        <Grid item xs={12} sm={6} md={4} key={piece.id}>
+                        <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={piece.id}>
                           <PieceCard {...piece} onEdit={handleEdit} onDelete={handleDelete} />
-                        </Grid>
+                        </Grid2>
                       ))}
-                    </Grid>
+                    </Grid2>
                   ) : (
                     <Stack alignItems="center" gap={2} py={8}>
-                      <Typography variant="h6" color="textSecondary">
-                        아직 작성한 Piece가 없습니다
-                      </Typography>
+                      <NotoTypography variant="h6" color="textSecondary">
+                        아직 작성한 조각이 없습니다
+                      </NotoTypography>
                     </Stack>
                   )}
                 </Stack>
