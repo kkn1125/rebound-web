@@ -1,138 +1,154 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { NotoTypography } from "@components/atom/NotoTypography"
-import { SerifTypography } from "@components/atom/SerifTypography"
-import SEOMetaTag from "@components/atom/SEOMetaTag"
-import CTButton from "@components/atom/CTButton"
+import { EmotionIcons, EmotionLabels } from "@/common/enums/emotions";
+import { FailureTypeLabels } from "@/common/enums/failureTypes";
+import { useCreateBuild } from "@/hooks/queries/builds";
+import { useMyPieces } from "@/hooks/queries/pieces";
+import type { EmotionTag, Piece } from "@/types/api";
+import CTButton from "@components/atom/CTButton";
+import { NotoTypography } from "@components/atom/NotoTypography";
+import SEOMetaTag from "@components/atom/SEOMetaTag";
+import { SerifTypography } from "@components/atom/SerifTypography";
 import {
-  Container,
-  Stack,
-  Paper,
-  Toolbar,
-  Grid,
+  Alert,
+  Box,
   Card,
   CardContent,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Chip,
-  Box,
-  Divider,
-  IconButton,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   CircularProgress,
-  Alert,
-} from "@mui/material"
-import { useState, useRef } from "react"
-import { FiSave, FiEye, FiPlus, FiMove, FiTrash2, FiEdit3, FiArrowUp, FiArrowDown, FiImage } from "react-icons/fi"
-import { EmotionLabels, EmotionIcons } from "@/common/enums/emotions"
-import { FailureTypeLabels } from "@/common/enums/failureTypes"
-import { useMyPieces } from "@/hooks/queries/pieces"
-import { useCreateBuild } from "@/hooks/queries/builds"
-import { useNavigate } from "react-router-dom"
-import type { Piece, EmotionTag } from "@/types/api"
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Toolbar,
+} from "@mui/material";
+import { useRef, useState } from "react";
+import {
+  FiArrowDown,
+  FiArrowUp,
+  FiEdit3,
+  FiEye,
+  FiImage,
+  FiMove,
+  FiPlus,
+  FiSave,
+  FiTrash2,
+} from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 interface AssembledPiece extends Piece {
-  order: number
-  connectionText?: string
+  order: number;
+  connectionText?: string;
 }
 
 interface PieceAssemblyPageProps {
-  title: string
+  title: string;
 }
 
 const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
-  const { data: availablePieces = [], isLoading } = useMyPieces()
-  const [assembledPieces, setAssembledPieces] = useState<AssembledPiece[]>([])
-  const [selectedPieces, setSelectedPieces] = useState<string[]>([])
-  const [storyTitle, setStoryTitle] = useState("")
-  const [storyDescription, setStoryDescription] = useState("")
-  const [representativeEmotion, setRepresentativeEmotion] = useState("")
-  const [thumbnailImage, setThumbnailImage] = useState<string>("")
-  const [previewOpen, setPreviewOpen] = useState(false)
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+  const { data: availablePieces = [], isLoading } = useMyPieces();
+  const [assembledPieces, setAssembledPieces] = useState<AssembledPiece[]>([]);
+  const [selectedPieces, setSelectedPieces] = useState<string[]>([]);
+  const [storyTitle, setStoryTitle] = useState("");
+  const [storyDescription, setStoryDescription] = useState("");
+  const [representativeEmotion, setRepresentativeEmotion] = useState("");
+  const [thumbnailImage, setThumbnailImage] = useState<string>("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
-  const navigate = useNavigate()
-  const createBuildMutation = useCreateBuild()
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const navigate = useNavigate();
+  const createBuildMutation = useCreateBuild();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 조각 선택/해제
   const handlePieceSelect = (pieceId: string) => {
     setSelectedPieces((prev) => {
       if (prev.includes(pieceId)) {
-        return prev.filter((id) => id !== pieceId)
+        return prev.filter((id) => id !== pieceId);
       } else {
-        return [...prev, pieceId]
+        return [...prev, pieceId];
       }
-    })
-  }
+    });
+  };
 
   // 선택된 조각들을 조립 영역에 추가
   const handleAddSelectedPieces = () => {
     const newAssembledPieces = selectedPieces.map((pieceId, index) => {
-      const piece = availablePieces.find((p) => p.id.toString() === pieceId)!
+      const piece = availablePieces.find((p) => p.id.toString() === pieceId)!;
       return {
         ...piece,
         order: assembledPieces.length + index,
         connectionText: "",
-      }
-    })
+      };
+    });
 
-    setAssembledPieces((prev) => [...prev, ...newAssembledPieces])
-    setSelectedPieces([])
-  }
+    setAssembledPieces((prev) => [...prev, ...newAssembledPieces]);
+    setSelectedPieces([]);
+  };
 
   // 조각 제거
   const handleRemovePiece = (pieceId: number) => {
-    const newAssembled = assembledPieces.filter((p) => p.id !== pieceId)
-    newAssembled.forEach((p, index) => (p.order = index))
-    setAssembledPieces(newAssembled)
-  }
+    const newAssembled = assembledPieces.filter((p) => p.id !== pieceId);
+    newAssembled.forEach((p, index) => (p.order = index));
+    setAssembledPieces(newAssembled);
+  };
 
   // 조각 순서 변경 (위로)
   const handleMoveUp = (index: number) => {
-    if (index === 0) return
-    const newAssembled = [...assembledPieces]
-    ;[newAssembled[index - 1], newAssembled[index]] = [newAssembled[index], newAssembled[index - 1]]
-    newAssembled.forEach((p, i) => (p.order = i))
-    setAssembledPieces(newAssembled)
-  }
+    if (index === 0) return;
+    const newAssembled = [...assembledPieces];
+    [newAssembled[index - 1], newAssembled[index]] = [
+      newAssembled[index],
+      newAssembled[index - 1],
+    ];
+    newAssembled.forEach((p, i) => (p.order = i));
+    setAssembledPieces(newAssembled);
+  };
 
   // 조각 순서 변경 (아래로)
   const handleMoveDown = (index: number) => {
-    if (index === assembledPieces.length - 1) return
-    const newAssembled = [...assembledPieces]
-    ;[newAssembled[index], newAssembled[index + 1]] = [newAssembled[index + 1], newAssembled[index]]
-    newAssembled.forEach((p, i) => (p.order = i))
-    setAssembledPieces(newAssembled)
-  }
+    if (index === assembledPieces.length - 1) return;
+    const newAssembled = [...assembledPieces];
+    [newAssembled[index], newAssembled[index + 1]] = [
+      newAssembled[index + 1],
+      newAssembled[index],
+    ];
+    newAssembled.forEach((p, i) => (p.order = i));
+    setAssembledPieces(newAssembled);
+  };
 
   // 연결 문장 업데이트
   const handleConnectionTextChange = (index: number, text: string) => {
-    const newAssembled = [...assembledPieces]
-    newAssembled[index].connectionText = text
-    setAssembledPieces(newAssembled)
-  }
+    const newAssembled = [...assembledPieces];
+    newAssembled[index].connectionText = text;
+    setAssembledPieces(newAssembled);
+  };
 
   // 썸네일 이미지 업로드
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
-        setThumbnailImage(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+        setThumbnailImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   // 글 저장
   const handleSaveStory = async () => {
@@ -143,36 +159,41 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
         representativeEmotion: representativeEmotion as EmotionTag,
         thumbnail: thumbnailImage || undefined,
         previewText: storyDescription,
-      })
+      });
 
       // 성공 시 피드로 이동
-      navigate("/stories")
+      navigate("/stories");
     } catch (error) {
-      console.error("Failed to create build:", error)
+      console.error("Failed to create build:", error);
     }
-  }
+  };
 
   // 미리보기 콘텐츠 생성
   const generatePreviewContent = () => {
     return assembledPieces
       .sort((a, b) => a.order - b.order)
       .map((piece, index) => {
-        let content = piece.content
+        let content = piece.content;
         if (index < assembledPieces.length - 1 && piece.connectionText) {
-          content += "\n\n" + piece.connectionText
+          content += "\n\n" + piece.connectionText;
         }
-        return content
+        return content;
       })
-      .join("\n\n")
-  }
+      .join("\n\n");
+  };
 
   // 대표 감정 옵션 생성
   const getRepresentativeEmotionOptions = () => {
-    const allEmotions = Array.from(new Set(assembledPieces.flatMap((piece) => piece.emotionTags)))
-    return allEmotions
-  }
+    const allEmotions = Array.from(
+      new Set(assembledPieces.flatMap((piece) => piece.emotionTags))
+    );
+    return allEmotions;
+  };
 
-  const isFormValid = storyTitle.trim().length > 0 && assembledPieces.length > 0 && representativeEmotion
+  const isFormValid =
+    storyTitle.trim().length > 0 &&
+    assembledPieces.length > 0 &&
+    representativeEmotion;
 
   if (isLoading) {
     return (
@@ -187,7 +208,7 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
           </Stack>
         </Container>
       </Stack>
-    )
+    );
   }
 
   return (
@@ -208,18 +229,23 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
               새 글 쓰기
             </SerifTypography>
             <NotoTypography variant="body1" color="textSecondary">
-              작성한 조각들을 선택하고 조립하여 하나의 완성된 리바운드 스토리로 만들어보세요.
+              작성한 조각들을 선택하고 조립하여 하나의 완성된 리바운드 스토리로
+              만들어보세요.
             </NotoTypography>
           </Stack>
 
           {/* Success Alert */}
           {createBuildMutation.isSuccess && (
-            <Alert severity="success">리바운드 스토리가 성공적으로 게시되었습니다!</Alert>
+            <Alert severity="success">
+              리바운드 스토리가 성공적으로 게시되었습니다!
+            </Alert>
           )}
 
           {/* Error Alert */}
           {createBuildMutation.isError && (
-            <Alert severity="error">스토리 게시에 실패했습니다. 다시 시도해주세요.</Alert>
+            <Alert severity="error">
+              스토리 게시에 실패했습니다. 다시 시도해주세요.
+            </Alert>
           )}
 
           <Grid container spacing={4}>
@@ -237,20 +263,32 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                 }}
               >
                 <Stack gap={3}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
                     <SerifTypography variant="h6" fontWeight={600}>
                       내 조각함
                     </SerifTypography>
-                    <Chip label={`${selectedPieces.length}개 선택`} size="small" color="primary" />
+                    <Chip
+                      label={`${selectedPieces.length}개 선택`}
+                      size="small"
+                      color="primary"
+                    />
                   </Stack>
 
                   <NotoTypography variant="body2" color="textSecondary">
-                    조각을 선택하고 "추가하기" 버튼을 눌러 조립 영역에 추가하세요
+                    조각을 선택하고 "추가하기" 버튼을 눌러 조립 영역에
+                    추가하세요
                   </NotoTypography>
 
                   <Stack gap={2} sx={{ maxHeight: 400, overflowY: "auto" }}>
                     {availablePieces
-                      .filter((piece) => !assembledPieces.find((ap) => ap.id === piece.id))
+                      .filter(
+                        (piece) =>
+                          !assembledPieces.find((ap) => ap.id === piece.id)
+                      )
                       .map((piece) => (
                         <Card
                           key={piece.id}
@@ -261,7 +299,9 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                             border: selectedPieces.includes(piece.id.toString())
                               ? "2px solid #5A67EE"
                               : "1px solid #E0E0E0",
-                            backgroundColor: selectedPieces.includes(piece.id.toString())
+                            backgroundColor: selectedPieces.includes(
+                              piece.id.toString()
+                            )
                               ? "action.selected"
                               : "transparent",
                             "&:hover": {
@@ -272,14 +312,24 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                         >
                           <CardContent sx={{ p: 2 }}>
                             <Stack gap={1}>
-                              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                              <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="center"
+                              >
                                 <Chip
-                                  label={FailureTypeLabels[piece.failureType as keyof typeof FailureTypeLabels]}
+                                  label={
+                                    FailureTypeLabels[
+                                      piece.failureType as keyof typeof FailureTypeLabels
+                                    ]
+                                  }
                                   size="small"
                                   variant="outlined"
                                   sx={{ borderRadius: 1 }}
                                 />
-                                {selectedPieces.includes(piece.id.toString()) && (
+                                {selectedPieces.includes(
+                                  piece.id.toString()
+                                ) && (
                                   <Box
                                     sx={{
                                       width: 20,
@@ -310,8 +360,15 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                               </NotoTypography>
                               <Stack direction="row" gap={0.5} flexWrap="wrap">
                                 {piece.emotionTags.map((emotion) => (
-                                  <span key={emotion} style={{ fontSize: "0.8rem" }}>
-                                    {EmotionIcons[emotion as keyof typeof EmotionIcons]}
+                                  <span
+                                    key={emotion}
+                                    style={{ fontSize: "0.8rem" }}
+                                  >
+                                    {
+                                      EmotionIcons[
+                                        emotion as keyof typeof EmotionIcons
+                                      ]
+                                    }
                                   </span>
                                 ))}
                               </Stack>
@@ -387,15 +444,27 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                           <Select
                             value={representativeEmotion}
                             label="대표 감정"
-                            onChange={(e) => setRepresentativeEmotion(e.target.value)}
+                            onChange={(e) =>
+                              setRepresentativeEmotion(e.target.value)
+                            }
                             sx={{ borderRadius: 2 }}
                           >
-                            {getRepresentativeEmotionOptions().map((emotion) => (
-                              <MenuItem key={emotion} value={emotion}>
-                                {EmotionIcons[emotion as keyof typeof EmotionIcons]}{" "}
-                                {EmotionLabels[emotion as keyof typeof EmotionLabels]}
-                              </MenuItem>
-                            ))}
+                            {getRepresentativeEmotionOptions().map(
+                              (emotion) => (
+                                <MenuItem key={emotion} value={emotion}>
+                                  {
+                                    EmotionIcons[
+                                      emotion as keyof typeof EmotionIcons
+                                    ]
+                                  }{" "}
+                                  {
+                                    EmotionLabels[
+                                      emotion as keyof typeof EmotionLabels
+                                    ]
+                                  }
+                                </MenuItem>
+                              )
+                            )}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -414,7 +483,12 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                             <Box
                               component="img"
                               src={thumbnailImage}
-                              sx={{ width: 40, height: 40, borderRadius: 1, objectFit: "cover" }}
+                              sx={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 1,
+                                objectFit: "cover",
+                              }}
                             />
                           )}
                         </Stack>
@@ -440,7 +514,11 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                   }}
                 >
                   <Stack gap={3}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
                       <SerifTypography variant="h6" fontWeight={600}>
                         조각 조립 영역
                       </SerifTypography>
@@ -460,9 +538,18 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                     </Stack>
 
                     {assembledPieces.length === 0 ? (
-                      <Stack alignItems="center" justifyContent="center" gap={2} sx={{ height: 300 }}>
+                      <Stack
+                        alignItems="center"
+                        justifyContent="center"
+                        gap={2}
+                        sx={{ height: 300 }}
+                      >
                         <FiPlus size={48} color="#E0E0E0" />
-                        <NotoTypography variant="body1" color="textDisabled" textAlign="center">
+                        <NotoTypography
+                          variant="body1"
+                          color="textDisabled"
+                          textAlign="center"
+                        >
                           왼쪽에서 조각을 선택하여
                           <br />
                           글을 조립해보세요
@@ -481,8 +568,16 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                             >
                               <CardContent sx={{ p: 3 }}>
                                 <Stack gap={2}>
-                                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                    <Stack direction="row" alignItems="center" gap={1}>
+                                  <Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center"
+                                  >
+                                    <Stack
+                                      direction="row"
+                                      alignItems="center"
+                                      gap={1}
+                                    >
                                       <FiMove size={16} color="#999" />
                                       <Chip
                                         label={`${index + 1}번째 조각`}
@@ -492,7 +587,11 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                                         sx={{ borderRadius: 1 }}
                                       />
                                       <Chip
-                                        label={FailureTypeLabels[piece.failureType as keyof typeof FailureTypeLabels]}
+                                        label={
+                                          FailureTypeLabels[
+                                            piece.failureType as keyof typeof FailureTypeLabels
+                                          ]
+                                        }
                                         size="small"
                                         variant="outlined"
                                         sx={{ borderRadius: 1 }}
@@ -509,21 +608,38 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                                       <IconButton
                                         size="small"
                                         onClick={() => handleMoveDown(index)}
-                                        disabled={index === assembledPieces.length - 1}
+                                        disabled={
+                                          index === assembledPieces.length - 1
+                                        }
                                       >
                                         <FiArrowDown size={14} />
                                       </IconButton>
-                                      <IconButton size="small" onClick={() => handleRemovePiece(piece.id)}>
+                                      <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                          handleRemovePiece(piece.id)
+                                        }
+                                      >
                                         <FiTrash2 size={14} />
                                       </IconButton>
                                     </Stack>
                                   </Stack>
-                                  <NotoTypography variant="body1">{piece.content}</NotoTypography>
-                                  <Stack direction="row" gap={1} flexWrap="wrap">
+                                  <NotoTypography variant="body1">
+                                    {piece.content}
+                                  </NotoTypography>
+                                  <Stack
+                                    direction="row"
+                                    gap={1}
+                                    flexWrap="wrap"
+                                  >
                                     {piece.emotionTags.map((emotion) => (
                                       <Chip
                                         key={emotion}
-                                        label={EmotionLabels[emotion as keyof typeof EmotionLabels]}
+                                        label={
+                                          EmotionLabels[
+                                            emotion as keyof typeof EmotionLabels
+                                          ]
+                                        }
                                         size="small"
                                         variant="outlined"
                                         sx={{ borderRadius: 1 }}
@@ -540,7 +656,12 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                                 <TextField
                                   placeholder="조각 사이에 연결할 문장을 입력하세요 (선택사항)"
                                   value={piece.connectionText || ""}
-                                  onChange={(e) => handleConnectionTextChange(index, e.target.value)}
+                                  onChange={(e) =>
+                                    handleConnectionTextChange(
+                                      index,
+                                      e.target.value
+                                    )
+                                  }
                                   fullWidth
                                   size="small"
                                   sx={{
@@ -570,7 +691,9 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                       }}
                     >
                       <FiSave style={{ marginRight: 8 }} />
-                      {createBuildMutation.isPending ? "게시 중..." : "리바운드 스토리 게시하기"}
+                      {createBuildMutation.isPending
+                        ? "게시 중..."
+                        : "리바운드 스토리 게시하기"}
                     </CTButton>
                   </Stack>
                 </Paper>
@@ -581,13 +704,27 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
       </Container>
 
       {/* 미리보기 Dialog */}
-      <Dialog open={previewOpen} onClose={() => setPreviewOpen(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <SerifTypography variant="h6" fontWeight={600}>
               글 미리보기
             </SerifTypography>
-            <CTButton size="small" variant="outlined" color="dark" sx={{ borderRadius: 2 }}>
+            <CTButton
+              size="small"
+              variant="outlined"
+              color="dark"
+              sx={{ borderRadius: 2 }}
+            >
               <FiEdit3 style={{ marginRight: 4 }} />
               수정
             </CTButton>
@@ -621,9 +758,19 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
               )}
               {representativeEmotion && (
                 <Stack direction="row" alignItems="center" gap={1}>
-                  <span>{EmotionIcons[representativeEmotion as keyof typeof EmotionIcons]}</span>
+                  <span>
+                    {
+                      EmotionIcons[
+                        representativeEmotion as keyof typeof EmotionIcons
+                      ]
+                    }
+                  </span>
                   <NotoTypography variant="body2" color="textSecondary">
-                    {EmotionLabels[representativeEmotion as keyof typeof EmotionLabels]}
+                    {
+                      EmotionLabels[
+                        representativeEmotion as keyof typeof EmotionLabels
+                      ]
+                    }
                   </NotoTypography>
                 </Stack>
               )}
@@ -639,7 +786,9 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                 fontSize: "1.1rem",
               }}
             >
-              <NotoTypography variant="body1">{generatePreviewContent()}</NotoTypography>
+              <NotoTypography variant="body1">
+                {generatePreviewContent()}
+              </NotoTypography>
             </Box>
 
             <Divider />
@@ -650,7 +799,9 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
                 총 {assembledPieces.length}개의 조각으로 구성된 리바운드 스토리
               </NotoTypography>
               <Stack direction="row" gap={1} flexWrap="wrap">
-                {Array.from(new Set(assembledPieces.flatMap((piece) => piece.emotionTags))).map((emotion) => (
+                {Array.from(
+                  new Set(assembledPieces.flatMap((piece) => piece.emotionTags))
+                ).map((emotion) => (
                   <Chip
                     key={emotion}
                     label={EmotionLabels[emotion as keyof typeof EmotionLabels]}
@@ -664,7 +815,12 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <CTButton onClick={() => setPreviewOpen(false)} variant="outlined" color="dark" sx={{ borderRadius: 2 }}>
+          <CTButton
+            onClick={() => setPreviewOpen(false)}
+            variant="outlined"
+            color="dark"
+            sx={{ borderRadius: 2 }}
+          >
             닫기
           </CTButton>
           <CTButton
@@ -680,7 +836,7 @@ const PieceAssemblyPage: React.FC<PieceAssemblyPageProps> = ({ title }) => {
         </DialogActions>
       </Dialog>
     </Stack>
-  )
-}
+  );
+};
 
-export default PieceAssemblyPage
+export default PieceAssemblyPage;
